@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -47,7 +48,8 @@
 QSPI_HandleTypeDef hqspi;
 
 /* USER CODE BEGIN PV */
-
+extern "C"
+{
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,7 +57,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_QUADSPI_Init(void);
 /* USER CODE BEGIN PFP */
-
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -64,6 +66,9 @@ static void MX_QUADSPI_Init(void);
 #define WRITE_READ_ADDR 0
 QSPI_DISCO_F746NG qspi;
 char text[BUFFER_SIZE * 2]="London is the capital of GB.";
+
+uint8_t BufTx[4096] = {0};
+uint8_t BufRx[4096] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -73,7 +78,7 @@ char text[BUFFER_SIZE * 2]="London is the capital of GB.";
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	memset(BufTx, 0xAA, sizeof(BufTx));
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,6 +100,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_QUADSPI_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   // Check initialization
@@ -112,102 +118,106 @@ int main(void)
       printf("Init return value: %d\n\r", init_return);
       #endif // DEBUG
 
-      if (init_return != QSPI_OK)
-      {
-          #ifdef DEBUG
-         printf("QSPI Initialization FAILED\n\r");
-          #endif // DEBUG
+      qspi.WriteBlocks(BufTx, 0, 1);
 
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI Initialization PASSED\n\r");
-          #endif // DEBUG
+      qspi.ReadBlocks(BufRx, 0, 1);
 
-      }
+//      if (init_return != QSPI_OK)
+//      {
+//          #ifdef DEBUG
+//         printf("QSPI Initialization FAILED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//      else
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI Initialization PASSED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//
+//      HAL_Delay(20);
+//
+//      // Check memory informations
+//      qspi.GetInfo(&pQSPI_Info);
+//      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
+//          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
+//          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
+//          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
+//          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI informations FAILED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//      else
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI informations PASSED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//
+//      HAL_Delay(20);
+//
+//      // Erase memory
+//      if (qspi.Erase_Sector(WRITE_READ_ADDR) != QSPI_OK)
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI erase FAILED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//      else
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI erase PASSED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//
+//      HAL_Delay(20);
+//
+//      // Write memory
+//      if (qspi.Write(WriteBuffer, WRITE_READ_ADDR, 15) != QSPI_OK)
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI write FAILED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//      else
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI write PASSED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//
+//      HAL_Delay(20);
+//
+//      // Read memory
+//      if (qspi.Read(ReadBuffer, WRITE_READ_ADDR, 11) != QSPI_OK)
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI read FAILED\n\r");
+//          #endif // DEBUG
+//
+//      }
+//      else
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI read PASSED - [%s]\n\r", ReadBuffer);
+//          #endif // DEBUG
+//
+//
+//          sprintf((char*)text, "QSPI read PASSED - [%s]\n\r", ReadBuffer);
+//
+//      }
 
-      HAL_Delay(2000);
-
-      // Check memory informations
-      qspi.GetInfo(&pQSPI_Info);
-      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
-          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
-          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
-          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
-          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
-      {
-          #ifdef DEBUG
-          printf("QSPI informations FAILED\n\r");
-          #endif // DEBUG
-
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI informations PASSED\n\r");
-          #endif // DEBUG
-
-      }
-
-      HAL_Delay(2000);
-
-      // Erase memory
-      if (qspi.Erase_Block(WRITE_READ_ADDR) != QSPI_OK)
-      {
-          #ifdef DEBUG
-          printf("QSPI erase FAILED\n\r");
-          #endif // DEBUG
-
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI erase PASSED\n\r");
-          #endif // DEBUG
-
-      }
-
-      HAL_Delay(2000);
-
-      // Write memory
-      if (qspi.Write(WriteBuffer, WRITE_READ_ADDR, 15) != QSPI_OK)
-      {
-          #ifdef DEBUG
-          printf("QSPI write FAILED\n\r");
-          #endif // DEBUG
-
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI write PASSED\n\r");
-          #endif // DEBUG
-
-      }
-
-      HAL_Delay(2000);
-
-      // Read memory
-      if (qspi.Read(ReadBuffer, WRITE_READ_ADDR, 11) != QSPI_OK)
-      {
-          #ifdef DEBUG
-          printf("QSPI read FAILED\n\r");
-          #endif // DEBUG
-
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI read PASSED - [%s]\n\r", ReadBuffer);
-          #endif // DEBUG
-
-
-          sprintf((char*)text, "QSPI read PASSED - [%s]\n\r", ReadBuffer);
-
-      }
-
-      HAL_Delay(2000);
+     // HAL_Delay(2000);
 
   /* USER CODE END 2 */
 
@@ -230,6 +240,7 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
   */
@@ -245,7 +256,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 25;
   RCC_OscInitStruct.PLL.PLLN = 432;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -266,6 +277,12 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }

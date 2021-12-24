@@ -30,6 +30,14 @@ QSPI_DISCO_F746NG::~QSPI_DISCO_F746NG()
   BSP_QSPI_DeInit();
 }
 
+
+static void wait(volatile uint32_t val)
+{
+	while(val--)
+	{
+		UNUSED(val);
+	}
+}
 //=================================================================================================================
 // Public methods
 //=================================================================================================================
@@ -128,17 +136,26 @@ uint8_t QSPI_DISCO_F746NG::WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t 
 
 	while(data_write < bufferSize)
 	{
-		uint32_t incr = bufferSize < MAX_WRITE_SIZE ? bufferSize : MAX_WRITE_SIZE;
+
 
 		Erase_Sector(address);
 
-		if (Write((uint8_t *) &buff[data_write], address, incr))
+		wait(516000);
+
+		for (uint32_t i = 0; i < 16; i++)
 		{
-			return -1;
+			uint32_t incr = bufferSize < MAX_WRITE_SIZE ? bufferSize : MAX_WRITE_SIZE;
+
+			if (Write((uint8_t *) &buff[data_write], address, incr))
+			{
+				return -1;
+			}
+
+			data_write += incr;
+			address += incr;
 		}
 
-		data_write += incr;
-		address += incr;
+
 	}
 
 
