@@ -33,8 +33,15 @@
 */
 class QSPI_DISCO_F746NG
 {
+
+	static constexpr uint32_t MAX_READ_SIZE = 4096;
+	static constexpr uint32_t MAX_WRITE_SIZE = 4096;
+
   
 public:
+
+	static constexpr uint32_t BLOCK_SIZE = 4096;
+
     //! Constructor
     QSPI_DISCO_F746NG();
 
@@ -126,6 +133,10 @@ public:
     * @retval QSPI memory status
     */
   uint8_t ResumeErase(void);
+
+
+  uint8_t ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count);
+  uint8_t WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count);
 
 private:
 

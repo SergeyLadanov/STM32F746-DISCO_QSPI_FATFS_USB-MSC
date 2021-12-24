@@ -94,6 +94,57 @@ uint8_t QSPI_DISCO_F746NG::ResumeErase(void)
   return BSP_QSPI_ResumeErase();
 }
 
+
+// Read data blocks
+uint8_t QSPI_DISCO_F746NG::ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
+{
+	uint32_t bufferSize = (BLOCK_SIZE * count);
+	uint32_t address =  (sector * BLOCK_SIZE);
+	uint32_t data_read = 0;
+
+	while(data_read < bufferSize)
+	{
+		uint32_t incr = bufferSize < MAX_READ_SIZE ? bufferSize : MAX_READ_SIZE;
+
+		if (Read(&buff[data_read], address, incr))
+		{
+			return -1;
+		}
+
+		data_read += incr;
+		address += incr;
+	}
+
+	return 0;
+}
+
+// Write data blocks
+uint8_t QSPI_DISCO_F746NG::WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
+{
+	uint32_t bufferSize = (BLOCK_SIZE * count);
+	uint32_t address =  (sector * BLOCK_SIZE);
+	uint32_t data_write = 0;
+
+
+	while(data_write < bufferSize)
+	{
+		uint32_t incr = bufferSize < MAX_WRITE_SIZE ? bufferSize : MAX_WRITE_SIZE;
+
+		Erase_Sector(address);
+
+		if (Write((uint8_t *) &buff[data_write], address, incr))
+		{
+			return -1;
+		}
+
+		data_write += incr;
+		address += incr;
+	}
+
+
+	return 0;
+}
+
 //=================================================================================================================
 // Private methods
 //=================================================================================================================
