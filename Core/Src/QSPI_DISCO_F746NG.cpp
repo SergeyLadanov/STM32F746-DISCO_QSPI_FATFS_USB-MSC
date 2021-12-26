@@ -112,12 +112,16 @@ uint8_t QSPI_DISCO_F746NG::ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t c
 
 	while(data_read < bufferSize)
 	{
-		uint32_t incr = bufferSize < MAX_READ_SIZE ? bufferSize : MAX_READ_SIZE;
+		uint32_t incr = MAX_READ_SIZE;
+
+		//wait(2000);
 
 		if (Read(&buff[data_read], address, incr))
 		{
 			return -1;
 		}
+
+		wait(4000);
 
 		data_read += incr;
 		address += incr;
@@ -140,16 +144,18 @@ uint8_t QSPI_DISCO_F746NG::WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t 
 
 		Erase_Sector(address);
 
-		wait(516000);
+		wait(5000000);
 
-		for (uint32_t i = 0; i < 16; i++)
+		for (uint32_t i = 0; i < (BLOCK_SIZE / MAX_WRITE_SIZE); i++)
 		{
-			uint32_t incr = bufferSize < MAX_WRITE_SIZE ? bufferSize : MAX_WRITE_SIZE;
+			uint32_t incr = MAX_WRITE_SIZE;
 
 			if (Write((uint8_t *) &buff[data_write], address, incr))
 			{
 				return -1;
 			}
+
+			wait(40000);
 
 			data_write += incr;
 			address += incr;

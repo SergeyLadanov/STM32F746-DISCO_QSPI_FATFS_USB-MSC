@@ -100,7 +100,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_QUADSPI_Init();
-  MX_USB_DEVICE_Init();
+
   /* USER CODE BEGIN 2 */
 
   // Check initialization
@@ -118,49 +118,57 @@ int main(void)
       printf("Init return value: %d\n\r", init_return);
       #endif // DEBUG
 
-      qspi.WriteBlocks(BufTx, 0, 1);
 
-      qspi.ReadBlocks(BufRx, 0, 1);
 
-//      if (init_return != QSPI_OK)
-//      {
-//          #ifdef DEBUG
-//         printf("QSPI Initialization FAILED\n\r");
-//          #endif // DEBUG
+      if (init_return != QSPI_OK)
+      {
+          #ifdef DEBUG
+         printf("QSPI Initialization FAILED\n\r");
+          #endif // DEBUG
+
+      }
+      else
+      {
+          #ifdef DEBUG
+          printf("QSPI Initialization PASSED\n\r");
+          #endif // DEBUG
+
+      }
+
+      HAL_Delay(20);
+
+      // Check memory informations
+      qspi.GetInfo(&pQSPI_Info);
+      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
+          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
+          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
+          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
+          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
+      {
+          #ifdef DEBUG
+          printf("QSPI informations FAILED\n\r");
+          #endif // DEBUG
+
+      }
+      else
+      {
+          #ifdef DEBUG
+          printf("QSPI informations PASSED\n\r");
+          #endif // DEBUG
+
+      }
+
+      MX_USB_DEVICE_Init();
+//      HAL_Delay(20);
 //
-//      }
-//      else
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI Initialization PASSED\n\r");
-//          #endif // DEBUG
-//
-//      }
+//      qspi.WriteBlocks(BufTx, 0, 1);
 //
 //      HAL_Delay(20);
 //
-//      // Check memory informations
-//      qspi.GetInfo(&pQSPI_Info);
-//      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
-//          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
-//          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
-//          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
-//          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI informations FAILED\n\r");
-//          #endif // DEBUG
+//      qspi.ReadBlocks(BufRx, 0, 1);
 //
-//      }
-//      else
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI informations PASSED\n\r");
-//          #endif // DEBUG
 //
-//      }
-//
-//      HAL_Delay(20);
+//      printf("Test finished\r\n");
 //
 //      // Erase memory
 //      if (qspi.Erase_Sector(WRITE_READ_ADDR) != QSPI_OK)

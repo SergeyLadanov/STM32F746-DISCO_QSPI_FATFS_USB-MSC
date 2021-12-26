@@ -34,8 +34,8 @@
 class QSPI_DISCO_F746NG
 {
 
-	static constexpr uint32_t MAX_READ_SIZE = 256;
-	static constexpr uint32_t MAX_WRITE_SIZE = 256;
+	static constexpr uint32_t MAX_READ_SIZE = 64;
+	static constexpr uint32_t MAX_WRITE_SIZE = 64;
 
   
 public:

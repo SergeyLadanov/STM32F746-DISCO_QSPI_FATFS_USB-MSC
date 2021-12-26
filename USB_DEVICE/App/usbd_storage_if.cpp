@@ -24,6 +24,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 #include "QSPI_DISCO_F746NG.h"
+#include <cstring>
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,7 +66,7 @@ extern QSPI_DISCO_F746NG qspi;
 
 #define STORAGE_LUN_NBR                  1
 #define STORAGE_BLK_NBR                  0x10000
-#define STORAGE_BLK_SIZ                  0x200
+#define STORAGE_BLK_SIZ                  4096
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -150,7 +151,54 @@ static int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uin
 static int8_t STORAGE_GetMaxLun_FS(void);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
+static uint8_t storage_buffer[128 * 1024];
 
+static uint32_t counter_tx = 0;
+static uint32_t counter_rx = 0;
+
+static void ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
+{
+	uint32_t bufferSize = (STORAGE_BLK_SIZ * count);
+	uint32_t address =  (sector * STORAGE_BLK_SIZ);
+	uint32_t data_read = 0;
+
+	while(data_read < bufferSize)
+	{
+		uint32_t incr = bufferSize;
+
+		//Read(&buff[data_read], address, incr))
+
+		memcpy(&buff[data_read], &storage_buffer[address], incr);
+
+
+		data_read += incr;
+		address += incr;
+	}
+
+}
+
+static void WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
+{
+		uint32_t bufferSize = (STORAGE_BLK_SIZ * count);
+		uint32_t address =  (sector * STORAGE_BLK_SIZ);
+		uint32_t data_write = 0;
+
+
+		while(data_write < bufferSize)
+		{
+			uint32_t incr = bufferSize;
+
+			//Write((uint8_t *) &buff[data_write], address, incr)
+
+			memcpy(&storage_buffer[address], &buff[data_write], incr);
+
+
+			data_write += incr;
+			address += incr;
+
+		}
+
+}
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
 /**
@@ -192,8 +240,8 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  *block_num  = (16 * 1024 * 1024) / 4096;
-  *block_size = 4096;
+  *block_num  = sizeof(storage_buffer) / STORAGE_BLK_SIZ;
+  *block_size = STORAGE_BLK_SIZ;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -230,6 +278,7 @@ int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)
 int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 6 */
+	counter_rx++;
 	qspi.ReadBlocks(buf, blk_addr, blk_len);
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -243,6 +292,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
+	counter_tx++;
 	qspi.WriteBlocks(buf, blk_addr, blk_len);
   return (USBD_OK);
   /* USER CODE END 7 */
