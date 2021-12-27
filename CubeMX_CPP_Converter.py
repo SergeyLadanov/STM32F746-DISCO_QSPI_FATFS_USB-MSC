@@ -9,7 +9,8 @@ import os, sys, time
 fileList = [
     "main", # Это имя используется в качестве маркера для динамического определения текущего расширения
     "*it",
-    "usbd_storage_if"
+    "usbd_storage_if",
+    "user_diskio"
 ]
 
 # Массив заменяемых расширений

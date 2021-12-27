@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -71,6 +72,7 @@ int __io_putchar(int ch)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 QSPI_DISCO_F746NG qspi;
+/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -102,6 +104,7 @@ int main(void)
   MX_GPIO_Init();
   MX_QUADSPI_Init();
   MX_USB_DEVICE_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
   uint8_t init_return = qspi.Init();
@@ -216,14 +219,14 @@ static void MX_QUADSPI_Init(void)
   hqspi.Init.ClockPrescaler = 3;
   hqspi.Init.FifoThreshold = 4;
   hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
-  hqspi.Init.FlashSize = POSITION_VAL(0x1000000) - 1;
+  hqspi.Init.FlashSize = 23;
   hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
   hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
   hqspi.Init.FlashID = QSPI_FLASH_ID_1;
   hqspi.Init.DualFlash = QSPI_DUALFLASH_DISABLE;
   if (HAL_QSPI_Init(&hqspi) != HAL_OK)
   {
-	Error_Handler();
+    Error_Handler();
   }
   /* USER CODE BEGIN QUADSPI_Init 2 */
 
