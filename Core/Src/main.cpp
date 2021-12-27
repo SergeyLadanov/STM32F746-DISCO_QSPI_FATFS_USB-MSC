@@ -37,6 +37,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define USE_WRITE_TEST 0
+#define USE_READ_TEST 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -70,6 +72,8 @@ int __io_putchar(int ch)
 
 char buffer[128] = "QSPI test with FAT_FS";
 char ReadBuffer[128];
+
+
 
 /* USER CODE END PFP */
 
@@ -142,6 +146,7 @@ int main(void)
 		{
 		  printf("Mounted!\r\n");
 
+#if USE_WRITE_TEST != 0
 		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
 		  {
 			  printf("File opened!\r\n");
@@ -167,8 +172,10 @@ int main(void)
 		  {
 			  printf("File was not opened!\r\n");
 		  }
+#endif
 
 
+#if USE_READ_TEST != 0
 		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
 		  {
 			  printf("File opened!\r\n");
@@ -196,6 +203,7 @@ int main(void)
 		  {
 			  printf("File was not opened!\r\n");
 		  }
+#endif
 
 		  break;
 		}
