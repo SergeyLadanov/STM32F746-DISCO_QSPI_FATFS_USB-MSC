@@ -181,4 +181,3 @@ void HAL_QSPI_MspDeInit(QSPI_HandleTypeDef* hqspi)
 
 /* USER CODE END 1 */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

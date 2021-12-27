@@ -171,5 +171,3 @@
 #endif
 
 #endif /* __USBD_CONF__H__ */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
