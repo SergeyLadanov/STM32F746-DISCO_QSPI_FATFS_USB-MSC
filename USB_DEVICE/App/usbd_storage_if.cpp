@@ -66,7 +66,7 @@ extern QSPI_DISCO_F746NG qspi;
 
 #define STORAGE_LUN_NBR                  1
 #define STORAGE_BLK_NBR                  0x10000
-#define STORAGE_BLK_SIZ                  0x200
+#define STORAGE_BLK_SIZ                  4096
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -280,7 +280,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
 	counter_rx++;
-	ReadBlocks(buf, blk_addr, blk_len);
+	qspi.ReadBlocks(buf, blk_addr, blk_len);
 
   return (USBD_OK);
   /* USER CODE END 6 */
