@@ -66,7 +66,7 @@ extern QSPI_DISCO_F746NG qspi;
 
 #define STORAGE_LUN_NBR                  1
 #define STORAGE_BLK_NBR                  0x10000
-#define STORAGE_BLK_SIZ                  4096
+#define STORAGE_BLK_SIZ                  0x200
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -151,7 +151,7 @@ static int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uin
 static int8_t STORAGE_GetMaxLun_FS(void);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
-static uint8_t storage_buffer[128 * 1024];
+static uint8_t storage_buffer[1024];
 
 static uint32_t counter_tx = 0;
 static uint32_t counter_rx = 0;
@@ -240,8 +240,8 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  *block_num  = sizeof(storage_buffer) / STORAGE_BLK_SIZ;
-  *block_size = STORAGE_BLK_SIZ;
+  *block_num  = (256 * 1024) / 4096;
+  *block_size = 4096;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -279,7 +279,11 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
 	counter_rx++;
-	qspi.ReadBlocks(buf, blk_addr, blk_len);
+	if (qspi.ReadBlocks(buf, blk_addr, blk_len))
+	{
+		return (USBD_FAIL);
+	}
+
   return (USBD_OK);
   /* USER CODE END 6 */
 }
@@ -293,7 +297,10 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 {
   /* USER CODE BEGIN 7 */
 	counter_tx++;
-	qspi.WriteBlocks(buf, blk_addr, blk_len);
+	if (qspi.WriteBlocks(buf, blk_addr, blk_len))
+	{
+		return (USBD_FAIL);
+	}
   return (USBD_OK);
   /* USER CODE END 7 */
 }

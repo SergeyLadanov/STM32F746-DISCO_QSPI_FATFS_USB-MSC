@@ -387,6 +387,12 @@ uint8_t BSP_QSPI_Erase_Sector(uint32_t Sector)
     return QSPI_ERROR;
   }
   
+
+  if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  {
+	  return QSPI_ERROR;
+  }
+
   return QSPI_OK;
 }
 

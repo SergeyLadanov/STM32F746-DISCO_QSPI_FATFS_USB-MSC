@@ -67,8 +67,8 @@ static void MX_QUADSPI_Init(void);
 QSPI_DISCO_F746NG qspi;
 char text[BUFFER_SIZE * 2]="London is the capital of GB.";
 
-uint8_t BufTx[4096] = {0};
-uint8_t BufRx[4096] = {0};
+//uint32_t BufTx[6 * 1024] = {0};
+//uint32_t BufRx[6 * 1024] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -78,7 +78,12 @@ uint8_t BufRx[4096] = {0};
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	memset(BufTx, 0xAA, sizeof(BufTx));
+//	memset(BufTx, 0xAA, sizeof(BufTx));
+
+//	for (uint32_t i = 0; i < sizeof(BufTx) / sizeof(BufTx[0]); i++)
+//	{
+//		BufTx[i] = (i + 1);
+//	}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,19 +104,19 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_QUADSPI_Init();
-
+  //MX_QUADSPI_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   // Check initialization
-      QSPI_Info pQSPI_Info;
-      uint8_t WriteBuffer[BUFFER_SIZE] = "Hello World !!!";
-      uint8_t ReadBuffer[BUFFER_SIZE];
-
-      #ifdef DEBUG
-      printf("\n\nQSPI demo started\n\r");
-      #endif // DEBUG
-
+//      QSPI_Info pQSPI_Info;
+//      uint8_t WriteBuffer[BUFFER_SIZE] = "Hello World !!!";
+//      uint8_t ReadBuffer[BUFFER_SIZE];
+//
+//      #ifdef DEBUG
+//      printf("\n\nQSPI demo started\n\r");
+//      #endif // DEBUG
+//
       uint8_t init_return = qspi.Init();
 
       #ifdef DEBUG
@@ -135,37 +140,37 @@ int main(void)
 
       }
 
-      HAL_Delay(20);
-
-      // Check memory informations
-      qspi.GetInfo(&pQSPI_Info);
-      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
-          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
-          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
-          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
-          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
-      {
-          #ifdef DEBUG
-          printf("QSPI informations FAILED\n\r");
-          #endif // DEBUG
-
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI informations PASSED\n\r");
-          #endif // DEBUG
-
-      }
-
-      MX_USB_DEVICE_Init();
 //      HAL_Delay(20);
 //
-//      qspi.WriteBlocks(BufTx, 0, 1);
+//      // Check memory informations
+//      qspi.GetInfo(&pQSPI_Info);
+//      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
+//          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
+//          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
+//          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
+//          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI informations FAILED\n\r");
+//          #endif // DEBUG
 //
+//      }
+//      else
+//      {
+//          #ifdef DEBUG
+//          printf("QSPI informations PASSED\n\r");
+//          #endif // DEBUG
+//
+//      }
+
+
 //      HAL_Delay(20);
 //
-//      qspi.ReadBlocks(BufRx, 0, 1);
+//      qspi.WriteBlocks((uint8_t *) BufTx, 0, 6);
+//
+//      //HAL_Delay(20);
+//
+//      qspi.ReadBlocks((uint8_t *) BufRx, 0, 6);
 //
 //
 //      printf("Test finished\r\n");
@@ -316,14 +321,14 @@ static void MX_QUADSPI_Init(void)
   hqspi.Init.ClockPrescaler = 3;
   hqspi.Init.FifoThreshold = 4;
   hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
-  hqspi.Init.FlashSize = 23;
+  hqspi.Init.FlashSize = POSITION_VAL(0x1000000) - 1;
   hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
   hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
   hqspi.Init.FlashID = QSPI_FLASH_ID_1;
   hqspi.Init.DualFlash = QSPI_DUALFLASH_DISABLE;
   if (HAL_QSPI_Init(&hqspi) != HAL_OK)
   {
-    Error_Handler();
+	Error_Handler();
   }
   /* USER CODE BEGIN QUADSPI_Init 2 */
 
@@ -341,8 +346,8 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
