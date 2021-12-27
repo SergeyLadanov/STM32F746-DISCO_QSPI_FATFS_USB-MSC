@@ -36,6 +36,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include "ff_gen_drv.h"
+#include "QSPI_DISCO_F746NG.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -43,6 +44,8 @@
 /* Private variables ---------------------------------------------------------*/
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
+
+extern QSPI_DISCO_F746NG qspi;
 
 /* USER CODE END DECL */
 
@@ -82,8 +85,7 @@ DSTATUS USER_initialize (
 )
 {
   /* USER CODE BEGIN INIT */
-    Stat = STA_NOINIT;
-    return Stat;
+	return USER_status(pdrv);
   /* USER CODE END INIT */
 }
 
@@ -97,7 +99,14 @@ DSTATUS USER_status (
 )
 {
   /* USER CODE BEGIN STATUS */
+	QSPI_Info Info;
     Stat = STA_NOINIT;
+
+    if (!qspi.GetInfo(&Info))
+    {
+    	Stat &= ~STA_NOINIT;
+    }
+
     return Stat;
   /* USER CODE END STATUS */
 }
@@ -118,6 +127,10 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
+	if (qspi.ReadBlocks((uint8_t *) buff, sector, count))
+	{
+		return RES_ERROR;
+	}
     return RES_OK;
   /* USER CODE END READ */
 }
@@ -140,6 +153,11 @@ DRESULT USER_write (
 {
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
+
+	if (qspi.WriteBlocks((uint8_t *) buff, sector, count))
+	{
+		return RES_ERROR;
+	}
     return RES_OK;
   /* USER CODE END WRITE */
 }
@@ -160,8 +178,40 @@ DRESULT USER_ioctl (
 )
 {
   /* USER CODE BEGIN IOCTL */
-    DRESULT res = RES_ERROR;
-    return res;
+	DRESULT res = RES_ERROR;
+
+	if (Stat & STA_NOINIT) return RES_NOTRDY;
+
+	switch (cmd)
+	{
+		/* Make sure that no pending write process */
+	case CTRL_SYNC :
+		res = RES_OK;
+		break;
+
+		/* Get number of sectors on the disk (DWORD) */
+	case GET_SECTOR_COUNT :
+		*(DWORD*)buff = qspi.GetSectorsNumber();
+		res = RES_OK;
+		break;
+
+		/* Get R/W sector size (WORD) */
+	case GET_SECTOR_SIZE :
+		*(WORD*)buff = qspi.GetSectorSize();
+		res = RES_OK;
+		break;
+
+		/* Get erase block size in unit of sector (DWORD) */
+	case GET_BLOCK_SIZE :
+		*(DWORD*)buff = 1;
+		res = RES_OK;
+		break;
+
+	default:
+		res = RES_PARERR;
+	}
+
+	return res;
   /* USER CODE END IOCTL */
 }
 #endif /* _USE_IOCTL == 1 */
