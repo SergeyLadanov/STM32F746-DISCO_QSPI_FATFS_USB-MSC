@@ -57,6 +57,14 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_QUADSPI_Init(void);
 /* USER CODE BEGIN PFP */
+
+
+int __io_putchar(int ch)
+{
+	ITM_SendChar(ch);
+	return ch;
+}
+
 }
 /* USER CODE END PFP */
 
