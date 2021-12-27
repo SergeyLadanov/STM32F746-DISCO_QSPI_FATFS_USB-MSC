@@ -33,20 +33,29 @@
 */
 class QSPI_DISCO_F746NG
 {
+private:
+	uint32_t Capacity = 0;
+	uint32_t SectorSize = 0;
 
-//	static constexpr uint32_t MAX_READ_SIZE = 4096;
-//	static constexpr uint32_t MAX_WRITE_SIZE = 4096;
-
-  
 public:
 
-	static constexpr uint32_t BLOCK_SIZE = 4096;
 
-    //! Constructor
-    QSPI_DISCO_F746NG();
+	inline uint32_t GetCapacity(void)
+	{
+		return Capacity;
+	}
 
-    //! Destructor
-    ~QSPI_DISCO_F746NG();
+
+	inline uint32_t GetSectorsNumber(void)
+	{
+		return (GetCapacity() / GetSectorSize());
+	}
+
+
+	inline uint32_t GetSectorSize(void)
+	{
+		return SectorSize;
+	}
 
   /**
     * @brief  Initializes the QSPI interface.

@@ -62,14 +62,7 @@ static void MX_QUADSPI_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define BUFFER_SIZE 256
-#define WRITE_READ_ADDR 0
 QSPI_DISCO_F746NG qspi;
-char text[BUFFER_SIZE * 2]="London is the capital of GB.";
-
-//uint32_t BufTx[6 * 1024] = {0};
-//uint32_t BufRx[6 * 1024] = {0};
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -78,12 +71,7 @@ char text[BUFFER_SIZE * 2]="London is the capital of GB.";
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-//	memset(BufTx, 0xAA, sizeof(BufTx));
 
-//	for (uint32_t i = 0; i < sizeof(BufTx) / sizeof(BufTx[0]); i++)
-//	{
-//		BufTx[i] = (i + 1);
-//	}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -108,129 +96,28 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
-  // Check initialization
-//      QSPI_Info pQSPI_Info;
-//      uint8_t WriteBuffer[BUFFER_SIZE] = "Hello World !!!";
-//      uint8_t ReadBuffer[BUFFER_SIZE];
-//
-//      #ifdef DEBUG
-//      printf("\n\nQSPI demo started\n\r");
-//      #endif // DEBUG
-//
-      uint8_t init_return = qspi.Init();
+  uint8_t init_return = qspi.Init();
 
-      #ifdef DEBUG
-      printf("Init return value: %d\n\r", init_return);
-      #endif // DEBUG
+#ifdef DEBUG
+  printf("Init return value: %d\n\r", init_return);
+#endif // DEBUG
 
 
 
-      if (init_return != QSPI_OK)
-      {
-          #ifdef DEBUG
-         printf("QSPI Initialization FAILED\n\r");
-          #endif // DEBUG
+  if (init_return != QSPI_OK)
+  {
+#ifdef DEBUG
+	  printf("QSPI Initialization FAILED\n\r");
+#endif // DEBUG
 
-      }
-      else
-      {
-          #ifdef DEBUG
-          printf("QSPI Initialization PASSED\n\r");
-          #endif // DEBUG
+  }
+  else
+  {
+#ifdef DEBUG
+	  printf("QSPI Initialization PASSED\n\r");
+#endif // DEBUG
 
-      }
-
-//      HAL_Delay(20);
-//
-//      // Check memory informations
-//      qspi.GetInfo(&pQSPI_Info);
-//      if ((pQSPI_Info.FlashSize          != N25Q128A_FLASH_SIZE) ||
-//          (pQSPI_Info.EraseSectorSize    != N25Q128A_SUBSECTOR_SIZE) ||
-//          (pQSPI_Info.ProgPageSize       != N25Q128A_PAGE_SIZE) ||
-//          (pQSPI_Info.EraseSectorsNumber != N25Q128A_SUBSECTOR_SIZE) ||
-//          (pQSPI_Info.ProgPagesNumber    != N25Q128A_SECTOR_SIZE))
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI informations FAILED\n\r");
-//          #endif // DEBUG
-//
-//      }
-//      else
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI informations PASSED\n\r");
-//          #endif // DEBUG
-//
-//      }
-
-
-//      HAL_Delay(20);
-//
-//      qspi.WriteBlocks((uint8_t *) BufTx, 0, 6);
-//
-//      //HAL_Delay(20);
-//
-//      qspi.ReadBlocks((uint8_t *) BufRx, 0, 6);
-//
-//
-//      printf("Test finished\r\n");
-//
-//      // Erase memory
-//      if (qspi.Erase_Sector(WRITE_READ_ADDR) != QSPI_OK)
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI erase FAILED\n\r");
-//          #endif // DEBUG
-//
-//      }
-//      else
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI erase PASSED\n\r");
-//          #endif // DEBUG
-//
-//      }
-//
-//      HAL_Delay(20);
-//
-//      // Write memory
-//      if (qspi.Write(WriteBuffer, WRITE_READ_ADDR, 15) != QSPI_OK)
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI write FAILED\n\r");
-//          #endif // DEBUG
-//
-//      }
-//      else
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI write PASSED\n\r");
-//          #endif // DEBUG
-//
-//      }
-//
-//      HAL_Delay(20);
-//
-//      // Read memory
-//      if (qspi.Read(ReadBuffer, WRITE_READ_ADDR, 11) != QSPI_OK)
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI read FAILED\n\r");
-//          #endif // DEBUG
-//
-//      }
-//      else
-//      {
-//          #ifdef DEBUG
-//          printf("QSPI read PASSED - [%s]\n\r", ReadBuffer);
-//          #endif // DEBUG
-//
-//
-//          sprintf((char*)text, "QSPI read PASSED - [%s]\n\r", ReadBuffer);
-//
-//      }
-
-     // HAL_Delay(2000);
+  }
 
   /* USER CODE END 2 */
 

@@ -18,33 +18,33 @@
 
 #include "QSPI_DISCO_F746NG.h"
 
-// Constructor
-QSPI_DISCO_F746NG::QSPI_DISCO_F746NG()
-{
-  //BSP_QSPI_Init();
-}
 
-// Destructor
-QSPI_DISCO_F746NG::~QSPI_DISCO_F746NG()
-{
-  //BSP_QSPI_DeInit();
-}
-
-
-static void wait(volatile uint32_t val)
-{
-	while(val--)
-	{
-		UNUSED(val);
-	}
-}
 //=================================================================================================================
 // Public methods
 //=================================================================================================================
 
 uint8_t QSPI_DISCO_F746NG::Init(void)
 {
-  return BSP_QSPI_Init();
+  if (!BSP_QSPI_Init())
+  {
+	  QSPI_Info Info;
+
+	  if (!GetInfo(&Info))
+	  {
+		  Capacity = Info.FlashSize;
+		  SectorSize = Info.EraseSectorSize;
+	  }
+	  else
+	  {
+		  return QSPI_ERROR;
+	  }
+  }
+  else
+  {
+	  return QSPI_ERROR;
+  }
+
+  return QSPI_OK;
 }
 
 uint8_t QSPI_DISCO_F746NG::DeInit(void)
@@ -106,58 +106,49 @@ uint8_t QSPI_DISCO_F746NG::ResumeErase(void)
 // Read data blocks
 uint8_t QSPI_DISCO_F746NG::ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 {
-	uint32_t bufferSize = (BLOCK_SIZE * count);
-	uint32_t address =  (sector * BLOCK_SIZE);
+	uint32_t bufferSize = (GetSectorSize() * count);
+	uint32_t address =  (sector * GetSectorSize());
 	uint32_t data_read = 0;
 
 	while(data_read < bufferSize)
 	{
-		uint32_t incr = bufferSize < BLOCK_SIZE ? bufferSize : BLOCK_SIZE;
 
-
-		if (Read(&buff[data_read], address, incr))
+		if (Read(&buff[data_read], address, GetSectorSize()))
 		{
-			return -1;
+			return QSPI_ERROR;
 		}
 
 
-		data_read += incr;
-		address += incr;
+		data_read += GetSectorSize();
+		address += GetSectorSize();
 	}
 
-	return 0;
+	return QSPI_OK;
 }
 
 // Write data blocks
 uint8_t QSPI_DISCO_F746NG::WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 {
-	uint32_t bufferSize = (BLOCK_SIZE * count);
-	uint32_t address =  (sector * BLOCK_SIZE);
+	uint32_t bufferSize = (GetSectorSize() * count);
+	uint32_t address =  (sector * GetSectorSize());
 	uint32_t data_write = 0;
 
 
 	while(data_write < bufferSize)
 	{
+		Erase_Block(address);
 
-		uint32_t incr = bufferSize < BLOCK_SIZE ? bufferSize : BLOCK_SIZE;
-
-		Erase_Sector(address);
-
-
-		if (Write((uint8_t *) &buff[data_write], address, incr))
+		if (Write((uint8_t *) &buff[data_write], address, GetSectorSize()))
 		{
-			return -1;
+			return QSPI_ERROR;
 		}
 
-
-		data_write += incr;
-		address += incr;
-
-
+		data_write += GetSectorSize();
+		address += GetSectorSize();
 	}
 
 
-	return 0;
+	return QSPI_OK;
 }
 
 //=================================================================================================================
