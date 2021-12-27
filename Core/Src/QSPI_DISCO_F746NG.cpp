@@ -106,13 +106,11 @@ uint8_t QSPI_DISCO_F746NG::ResumeErase(void)
 // Read data blocks
 uint8_t QSPI_DISCO_F746NG::ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 {
-	uint32_t bufferSize = (GetSectorSize() * count);
 	uint32_t address =  (sector * GetSectorSize());
 	uint32_t data_read = 0;
 
-	while(data_read < bufferSize)
+	for (uint32_t i = 0; i < count; i++)
 	{
-
 		if (Read(&buff[data_read], address, GetSectorSize()))
 		{
 			return QSPI_ERROR;
@@ -129,12 +127,11 @@ uint8_t QSPI_DISCO_F746NG::ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t c
 // Write data blocks
 uint8_t QSPI_DISCO_F746NG::WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 {
-	uint32_t bufferSize = (GetSectorSize() * count);
 	uint32_t address =  (sector * GetSectorSize());
 	uint32_t data_write = 0;
 
 
-	while(data_write < bufferSize)
+	for (uint32_t i = 0; i < count; i++)
 	{
 		Erase_Block(address);
 
