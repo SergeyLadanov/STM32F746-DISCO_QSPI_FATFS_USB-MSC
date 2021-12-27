@@ -151,7 +151,7 @@ static int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uin
 static int8_t STORAGE_GetMaxLun_FS(void);
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
-static uint8_t storage_buffer[1024];
+static uint8_t storage_buffer[128 * 1024];
 
 static uint32_t counter_tx = 0;
 static uint32_t counter_rx = 0;
@@ -162,11 +162,11 @@ static void ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 	uint32_t address =  (sector * STORAGE_BLK_SIZ);
 	uint32_t data_read = 0;
 
+	qspi.ReadBlocks(storage_buffer, 0,  sizeof(storage_buffer) / 4096);
+
 	while(data_read < bufferSize)
 	{
 		uint32_t incr = bufferSize;
-
-		//Read(&buff[data_read], address, incr))
 
 		memcpy(&buff[data_read], &storage_buffer[address], incr);
 
@@ -188,7 +188,6 @@ static void WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 		{
 			uint32_t incr = bufferSize;
 
-			//Write((uint8_t *) &buff[data_write], address, incr)
 
 			memcpy(&storage_buffer[address], &buff[data_write], incr);
 
@@ -197,6 +196,8 @@ static void WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
 			address += incr;
 
 		}
+
+		qspi.WriteBlocks(storage_buffer, 0, sizeof(storage_buffer) / 4096);
 
 }
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
@@ -240,7 +241,7 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  *block_num  = (256 * 1024) / 4096;
+  *block_num  = (128 * 1024) / 4096;
   *block_size = 4096;
   return (USBD_OK);
   /* USER CODE END 3 */
@@ -279,10 +280,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
 	counter_rx++;
-	if (qspi.ReadBlocks(buf, blk_addr, blk_len))
-	{
-		return (USBD_FAIL);
-	}
+	ReadBlocks(buf, blk_addr, blk_len);
 
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -297,10 +295,7 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 {
   /* USER CODE BEGIN 7 */
 	counter_tx++;
-	if (qspi.WriteBlocks(buf, blk_addr, blk_len))
-	{
-		return (USBD_FAIL);
-	}
+	WriteBlocks(buf, blk_addr, blk_len);
   return (USBD_OK);
   /* USER CODE END 7 */
 }
