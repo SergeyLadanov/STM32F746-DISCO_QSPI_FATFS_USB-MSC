@@ -172,18 +172,18 @@ int main(void)
 	printf("  capacity: %lu\n", dhara_map_capacity(&map));
 
 
-    for (int i = 0; i < 10; i++)
-    {
-        if (dhara_map_write(&map, 0, (const uint8_t *) write_buf, &err) < 0)
-            printf("Write aborted!\r\n");
+//    for (int i = 0; i < 10; i++)
+//    {
+//        if (dhara_map_write(&map, 0, (const uint8_t *) write_buf, &err) < 0)
+//            printf("Write aborted!\r\n");
+////
+////        HAL_Delay(1);
 //
-//        HAL_Delay(1);
-
-        if (dhara_map_read(&map, 0, (uint8_t *) read_buf, &err) < 0)
-            printf("Read aborted!\r\n");
-
-        printf("Result: %s\r\n", read_buf);
-    }
+//        if (dhara_map_read(&map, 0, (uint8_t *) read_buf, &err) < 0)
+//            printf("Read aborted!\r\n");
+//
+//        printf("Result: %s\r\n", read_buf);
+//    }
 
 //  	for (uint8_t i = 0; i < 3; i++)
 //  	{

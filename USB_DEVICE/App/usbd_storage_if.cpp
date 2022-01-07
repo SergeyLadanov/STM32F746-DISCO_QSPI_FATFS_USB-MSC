@@ -36,7 +36,6 @@
 /* Private variables ---------------------------------------------------------*/
 extern QSPI_DISCO_F746NG qspi;
 extern struct dhara_map map;
-extern struct dhara_nand sim_nand;
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -197,7 +196,7 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 {
   /* USER CODE BEGIN 3 */
   *block_num  = dhara_map_capacity(&map);
-  *block_size = 1 << sim_nand.log2_page_size;
+  *block_size = 1 << map.journal.nand->log2_page_size;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -238,7 +237,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 
 	for (uint32_t i = 0; i < blk_len; i++)
 	{
-		if (dhara_map_read(&map, blk_addr + i, &buf[i * (1 << sim_nand.log2_page_size)], &err) < 0)
+		if (dhara_map_read(&map, blk_addr + i, &buf[i * (1 << map.journal.nand->log2_page_size)], &err) < 0)
 		{
 			return (USBD_FAIL);
 		}
@@ -265,7 +264,7 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 
 	for (uint32_t i = 0; i < blk_len; i++)
 	{
-		if (dhara_map_write(&map, blk_addr + i, &buf[i * (1 << sim_nand.log2_page_size)], &err) < 0)
+		if (dhara_map_write(&map, blk_addr + i, &buf[i * (1 << map.journal.nand->log2_page_size)], &err) < 0)
 		{
 			return (USBD_FAIL);
 		}
