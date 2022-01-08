@@ -270,6 +270,11 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 		}
 	}
 	
+	if (dhara_map_sync(&map, &err) < 0)
+	{
+		return (USBD_FAIL);
+	}
+
 
   return (USBD_OK);
   /* USER CODE END 7 */

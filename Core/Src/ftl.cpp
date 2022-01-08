@@ -29,9 +29,8 @@ struct dhara_nand sim_nand = {
 };
 
 
-extern "C"
-{
 
+//--------------------------------------------
 int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t bno)
 {
 	if (bno >= NUM_BLOCKS) {
@@ -39,9 +38,10 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t bno)
 	}
 
 
-	return 0;
+	return false;
 }
 
+//--------------------------------------------
 void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t bno)
 {
 	if (bno >= NUM_BLOCKS) {
@@ -50,6 +50,7 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t bno)
 
 }
 
+//--------------------------------------------
 int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t bno,
 		     dhara_error_t *err)
 {
@@ -65,6 +66,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t bno,
 	return qspi.Erase_Block(addr);
 }
 
+//--------------------------------------------
 int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p,
 		    const uint8_t *data, dhara_error_t *err)
 {
@@ -82,32 +84,44 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p,
 
 }
 
+//--------------------------------------------
 int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 {
-//	const int bno = p >> LOG2_PAGES_PER_BLOCK;
-//	const int pno = p & ((1 << LOG2_PAGES_PER_BLOCK) - 1);
-//
-//	if ((bno < 0) || (bno >= NUM_BLOCKS)) {
-//		fprintf(stderr, "sim: NAND_is_free called on "
-//			"invalid block: %d\n", bno);
-//		abort();
-//	}
-//
-//	if (!stats.frozen)
-//		stats.is_erased++;
-//
-//	uint8_t *blk = pages + (bno << LOG2_BLOCK_SIZE);
-//
-//	if ((blk[0] == 0xFF) && (blk[1] == 0xFF))
-//	{
-//		printf("Page is erased!\r\n");
-//		return 1;
-//	}
-//
-//	printf("Page is not erased!\r\n");
-	return 0;
+	const int bno = p >> LOG2_PAGES_PER_BLOCK;
+
+	uint32_t probe = 0x00000000;
+
+	uint32_t size_block = (1 << LOG2_BLOCK_SIZE);
+
+	if ((bno < 0) || (bno >= NUM_BLOCKS))
+	{
+		return false;
+	}
+
+	uint32_t adr = (bno << LOG2_BLOCK_SIZE);
+
+
+	for (uint32_t i = 0; i < size_block; i += sizeof(probe))
+	{
+		if (qspi.Read((uint8_t *) &probe, adr + i, sizeof(probe)))
+		{
+			return false;
+		}
+
+		if (probe != 0xFFFFFFFF)
+		{
+			printf("Page is not erased!\r\n");
+			return false;
+		}
+	}
+
+
+	printf("Page is erased!\r\n");
+
+	return true;
 }
 
+//--------------------------------------------
 int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p,
 		    size_t offset, size_t length,
 		    uint8_t *data, dhara_error_t *err)
@@ -132,6 +146,8 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p,
 	return qspi.Read(data, addr + offset, length);
 }
 
+
+//--------------------------------------------
 int dhara_nand_copy(const struct dhara_nand *n,
 		    dhara_page_t src, dhara_page_t dst,
 		    dhara_error_t *err)
@@ -143,9 +159,6 @@ int dhara_nand_copy(const struct dhara_nand *n,
 		return -1;
 
 	return 0;
-}
-
-
 }
 
 

@@ -161,29 +161,13 @@ int main(void)
 
   }
 
-//  for (uint16_t i = 0; i < 4096; i++)
-//  {
-//	  qspi.WriteBlocks(test, i, 1);
-//  }
 
   printf("Map init\n");
-	dhara_map_init(&map, &sim_nand, page_buf, GC_RATIO);
-	dhara_map_resume(&map, NULL);
-	printf("  capacity: %lu\n", dhara_map_capacity(&map));
+  dhara_map_init(&map, &sim_nand, page_buf, GC_RATIO);
+  dhara_map_resume(&map, NULL);
+  printf("  capacity: %lu\n", dhara_map_capacity(&map));
 
 
-//    for (int i = 0; i < 10; i++)
-//    {
-//        if (dhara_map_write(&map, 0, (const uint8_t *) write_buf, &err) < 0)
-//            printf("Write aborted!\r\n");
-////
-////        HAL_Delay(1);
-//
-//        if (dhara_map_read(&map, 0, (uint8_t *) read_buf, &err) < 0)
-//            printf("Read aborted!\r\n");
-//
-//        printf("Result: %s\r\n", read_buf);
-//    }
 
 //  	for (uint8_t i = 0; i < 3; i++)
 //  	{
