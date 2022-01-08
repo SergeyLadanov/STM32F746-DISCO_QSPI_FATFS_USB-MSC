@@ -11,6 +11,7 @@
 
 extern QSPI_DISCO_F746NG qspi;
 
+
 //--------------------------------------------
 int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t bno)
 {
@@ -71,7 +72,7 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 
 	uint32_t probe = 0x00000000;
 
-	uint32_t size_block = dhara_nand_blocksize(n);
+	uint32_t size_block = dhara_nand_pagesize(n) / 4;
 
 	if ((bno < 0) || (bno >= dhara_nand_numblocks(n)))
 	{
@@ -90,13 +91,13 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 
 		if (probe != 0xFFFFFFFF)
 		{
-			printf("Page is not erased!\r\n");
+			//printf("Page is not erased!\r\n");
 			return false;
 		}
 	}
 
 
-	printf("Page is erased!\r\n");
+	//printf("Page is erased!\r\n");
 
 	return true;
 }
@@ -132,16 +133,14 @@ int dhara_nand_copy(const struct dhara_nand *n,
 		    dhara_page_t src, dhara_page_t dst,
 		    dhara_error_t *err)
 {
-//	uint8_t *buf = new uint8_t [dhara_nand_pagesize(n)];
-
-	uint8_t buf[512];
+	uint8_t *buf = new uint8_t [dhara_nand_pagesize(n)];
 
 	if ((dhara_nand_read(n, src, 0, dhara_nand_pagesize(n), buf, err) < 0) ||
 	    (dhara_nand_prog(n, dst, buf, err) < 0))
 		return -1;
 
 
-//	delete[] buf;
+	delete[] buf;
 
 	return 0;
 }

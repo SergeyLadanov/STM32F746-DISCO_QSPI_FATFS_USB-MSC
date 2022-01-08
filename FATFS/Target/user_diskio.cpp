@@ -103,10 +103,11 @@ DSTATUS USER_status (
 
     dhara_error_t err;
 
-    if (!dhara_map_resume(&map, &err))
+    if (!dhara_map_sync(&map, &err))
     {
     	Stat &= ~STA_NOINIT;
     }
+
 
     return Stat;
   /* USER CODE END STATUS */
@@ -212,7 +213,7 @@ DRESULT USER_ioctl (
 
 		/* Get erase block size in unit of sector (DWORD) */
 	case GET_BLOCK_SIZE :
-		*(DWORD*)buff = 8;
+		*(DWORD*)buff = 1;
 		res = RES_OK;
 		break;
 
