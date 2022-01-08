@@ -132,14 +132,16 @@ int dhara_nand_copy(const struct dhara_nand *n,
 		    dhara_page_t src, dhara_page_t dst,
 		    dhara_error_t *err)
 {
-	uint8_t *buf = new uint8_t [dhara_nand_pagesize(n)];
+//	uint8_t *buf = new uint8_t [dhara_nand_pagesize(n)];
+
+	uint8_t buf[512];
 
 	if ((dhara_nand_read(n, src, 0, dhara_nand_pagesize(n), buf, err) < 0) ||
 	    (dhara_nand_prog(n, dst, buf, err) < 0))
 		return -1;
 
 
-	delete[] buf;
+//	delete[] buf;
 
 	return 0;
 }

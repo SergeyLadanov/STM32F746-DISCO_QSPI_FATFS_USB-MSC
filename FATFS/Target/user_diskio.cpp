@@ -37,7 +37,7 @@
 #include <string.h>
 #include "ff_gen_drv.h"
 #include "QSPI_DISCO_F746NG.h"
-
+#include "dhara.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
@@ -45,7 +45,7 @@
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
 
-extern QSPI_DISCO_F746NG qspi;
+extern struct dhara_map map;
 
 /* USER CODE END DECL */
 
@@ -99,10 +99,11 @@ DSTATUS USER_status (
 )
 {
   /* USER CODE BEGIN STATUS */
-	QSPI_Info Info;
     Stat = STA_NOINIT;
 
-    if (!qspi.GetInfo(&Info))
+    dhara_error_t err;
+
+    if (!dhara_map_resume(&map, &err))
     {
     	Stat &= ~STA_NOINIT;
     }
@@ -127,10 +128,12 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-	if (qspi.ReadBlocks((uint8_t *) buff, sector, count))
+
+	if (dhara_read_blocks(&map, (uint8_t *) buff, sector, count))
 	{
 		return RES_ERROR;
 	}
+
     return RES_OK;
   /* USER CODE END READ */
 }
@@ -154,7 +157,7 @@ DRESULT USER_write (
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
 
-	if (qspi.WriteBlocks((uint8_t *) buff, sector, count))
+	if (dhara_write_blocks(&map, (uint8_t *) buff, sector, count))
 	{
 		return RES_ERROR;
 	}
@@ -179,6 +182,7 @@ DRESULT USER_ioctl (
 {
   /* USER CODE BEGIN IOCTL */
 	DRESULT res = RES_ERROR;
+	dhara_error_t err;
 
 	if (Stat & STA_NOINIT) return RES_NOTRDY;
 
@@ -186,24 +190,29 @@ DRESULT USER_ioctl (
 	{
 		/* Make sure that no pending write process */
 	case CTRL_SYNC :
-		res = RES_OK;
+
+		if (!dhara_map_sync(&map, &err))
+		{
+			res = RES_OK;
+		}
+
 		break;
 
 		/* Get number of sectors on the disk (DWORD) */
 	case GET_SECTOR_COUNT :
-		*(DWORD*)buff = qspi.GetSectorsNumber();
+		*(DWORD*)buff = dhara_map_capacity(&map);
 		res = RES_OK;
 		break;
 
 		/* Get R/W sector size (WORD) */
 	case GET_SECTOR_SIZE :
-		*(WORD*)buff = qspi.GetSectorSize();
+		*(WORD*)buff = dhara_map_blocksize(&map);
 		res = RES_OK;
 		break;
 
 		/* Get erase block size in unit of sector (DWORD) */
 	case GET_BLOCK_SIZE :
-		*(DWORD*)buff = 1;
+		*(DWORD*)buff = 8;
 		res = RES_OK;
 		break;
 

@@ -39,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define USE_WRITE_TEST 0
+#define USE_WRITE_TEST 1
 #define USE_READ_TEST 1
 /* USER CODE END PD */
 
@@ -156,85 +156,80 @@ int main(void)
 
   Dhara_Init();
 
+  	for (uint8_t i = 0; i < 3; i++)
+  	{
+		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
+		{
+		  printf("Mounted!\r\n");
+
+#if USE_WRITE_TEST != 0
+		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
+		  {
+			  printf("File opened!\r\n");
+			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
+			  {
+				  printf("Write success!\r\n");
+			  }
+			  else
+			  {
+				  printf("Write failed!\r\n");
+			  }
+
+			  if (f_close(&USERFile) == FR_OK)
+			  {
+				  printf("File was closed!\r\n");
+			  }
+			  else
+			  {
+				  printf("File was not closed!\r\n");
+			  }
+		  }
+		  else
+		  {
+			  printf("File was not opened!\r\n");
+		  }
+#endif
 
 
+#if USE_READ_TEST != 0
+		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
+		  {
+			  printf("File opened!\r\n");
 
 
+			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
+			  {
+				  printf("Read success!\r\n");
+			  }
+			  else
+			  {
+				  printf("Read failed!\r\n");
+			  }
 
-//  	for (uint8_t i = 0; i < 3; i++)
-//  	{
-//		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
-//		{
-//		  printf("Mounted!\r\n");
-//
-//#if USE_WRITE_TEST != 0
-//		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
-//		  {
-//			  printf("File opened!\r\n");
-//			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
-//			  {
-//				  printf("Write success!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("Write failed!\r\n");
-//			  }
-//
-//			  if (f_close(&USERFile) == FR_OK)
-//			  {
-//				  printf("File was closed!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("File was not closed!\r\n");
-//			  }
-//		  }
-//		  else
-//		  {
-//			  printf("File was not opened!\r\n");
-//		  }
-//#endif
-//
-//
-//#if USE_READ_TEST != 0
-//		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
-//		  {
-//			  printf("File opened!\r\n");
-//
-//
-//			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
-//			  {
-//				  printf("Read success!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("Read failed!\r\n");
-//			  }
-//
-//			  if (f_close(&USERFile) == FR_OK)
-//			  {
-//				  printf("File was closed!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("File was not closed!\r\n");
-//			  }
-//		  }
-//		  else
-//		  {
-//			  printf("File was not opened!\r\n");
-//		  }
-//#endif
-//
-//		  break;
-//		}
-//		else
-//		{
-//		  uint8_t buf[4096];
-//		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
-//		  printf("Not mounted!\r\n");
-//		}
-//  	}
+			  if (f_close(&USERFile) == FR_OK)
+			  {
+				  printf("File was closed!\r\n");
+			  }
+			  else
+			  {
+				  printf("File was not closed!\r\n");
+			  }
+		  }
+		  else
+		  {
+			  printf("File was not opened!\r\n");
+		  }
+#endif
+
+		  break;
+		}
+		else
+		{
+		  uint8_t buf[4096];
+		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
+		  printf("Not mounted!\r\n");
+		}
+  	}
 
   /* USER CODE END 2 */
 
