@@ -25,7 +25,7 @@
 /* USER CODE BEGIN INCLUDE */
 #include "QSPI_DISCO_F746NG.h"
 #include <cstring>
-#include "map.h"
+#include "dhara.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,7 +34,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-extern QSPI_DISCO_F746NG qspi;
 extern struct dhara_map map;
 /* USER CODE END PV */
 
@@ -196,7 +195,7 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 {
   /* USER CODE BEGIN 3 */
   *block_num  = dhara_map_capacity(&map);
-  *block_size = 1 << map.journal.nand->log2_page_size;
+  *block_size = dhara_map_blocksize(&map);
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -233,18 +232,11 @@ int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)
 int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 6 */
-	dhara_error_t err;
 
-	for (uint32_t i = 0; i < blk_len; i++)
+	if (dhara_read_blocks(&map, buf, blk_addr, blk_len))
 	{
-		if (dhara_map_read(&map, blk_addr + i, &buf[i * (1 << map.journal.nand->log2_page_size)], &err) < 0)
-		{
-			return (USBD_FAIL);
-		}
+		return (USBD_FAIL);
 	}
-
-
-
 
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -262,12 +254,9 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 
 	dhara_error_t err;
 
-	for (uint32_t i = 0; i < blk_len; i++)
+	if (dhara_write_blocks(&map, buf, blk_addr, blk_len))
 	{
-		if (dhara_map_write(&map, blk_addr + i, &buf[i * (1 << map.journal.nand->log2_page_size)], &err) < 0)
-		{
-			return (USBD_FAIL);
-		}
+		return (USBD_FAIL);
 	}
 	
 	if (dhara_map_sync(&map, &err) < 0)

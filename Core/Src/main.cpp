@@ -63,6 +63,8 @@ static void MX_GPIO_Init(void);
 static void MX_QUADSPI_Init(void);
 /* USER CODE BEGIN PFP */
 
+static void Dhara_Init(void);
+
 
 int __io_putchar(int ch)
 {
@@ -84,22 +86,12 @@ char ReadBuffer[128];
 QSPI_DISCO_F746NG qspi;
 FRESULT Status;
 UINT control;
-
-#define GC_RATIO		4
-
-
-extern struct dhara_nand sim_nand;
-
-
-char write_buf[512] = "Hello world!!!";
-char read_buf[512];
-
-size_t page_size = 1 << sim_nand.log2_page_size;
-uint8_t page_buf[512];
 struct dhara_map map;
-dhara_error_t err;
 
-uint8_t test[4096];
+
+
+
+
 
 /* USER CODE END 0 */
 
@@ -110,7 +102,7 @@ uint8_t test[4096];
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	memset(test, 0x55, sizeof(test));
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -162,10 +154,10 @@ int main(void)
   }
 
 
-  printf("Map init\n");
-  dhara_map_init(&map, &sim_nand, page_buf, GC_RATIO);
-  dhara_map_resume(&map, NULL);
-  printf("  capacity: %lu\n", dhara_map_capacity(&map));
+  Dhara_Init();
+
+
+
 
 
 
@@ -359,7 +351,26 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void Dhara_Init(void)
+{
+	static const struct dhara_nand nand =
+	{
+		.log2_page_size	= 9,
+		.log2_ppb		= 3,
+		.num_blocks		= 4096
+	};
 
+	static uint8_t page_buf[512];
+
+	printf("Map init\n");
+	dhara_map_init(&map, &nand, page_buf, 4);
+
+	if (dhara_map_resume(&map, NULL))
+	{
+		Error_Handler();
+	}
+	printf("Capacity: %lu\n", dhara_map_capacity(&map));
+}
 /* USER CODE END 4 */
 
 /**

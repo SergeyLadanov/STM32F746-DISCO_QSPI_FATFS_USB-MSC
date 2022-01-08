@@ -4,39 +4,19 @@
  *  Created on: 7 янв. 2022 г.
  *      Author: Acer
  */
-#include "nand.h"
+#include "dhara.h"
 #include "QSPI_DISCO_F746NG.h"
 #include <cstdio>
 #include <cstring>
 
 extern QSPI_DISCO_F746NG qspi;
 
-#define LOG2_PAGE_SIZE		9
-#define LOG2_PAGES_PER_BLOCK	3
-#define LOG2_BLOCK_SIZE		(LOG2_PAGE_SIZE + LOG2_PAGES_PER_BLOCK)
-#define NUM_BLOCKS		4096
-
-#define PAGE_SIZE		(1 << LOG2_PAGE_SIZE)
-#define PAGES_PER_BLOCK		(1 << LOG2_PAGES_PER_BLOCK)
-#define BLOCK_SIZE		(1 << LOG2_BLOCK_SIZE)
-#define MEM_SIZE		(NUM_BLOCKS * BLOCK_SIZE)
-
-
-struct dhara_nand sim_nand = {
-	.log2_page_size		= LOG2_PAGE_SIZE,
-	.log2_ppb		= LOG2_PAGES_PER_BLOCK,
-	.num_blocks		= NUM_BLOCKS
-};
-
-
-
 //--------------------------------------------
 int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t bno)
 {
-	if (bno >= NUM_BLOCKS) {
+	if (bno >= dhara_nand_numblocks(n)) {
 		return -1;
 	}
-
 
 	return false;
 }
@@ -44,7 +24,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t bno)
 //--------------------------------------------
 void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t bno)
 {
-	if (bno >= NUM_BLOCKS) {
+	if (bno >= dhara_nand_numblocks(n)) {
 		return;
 	}
 
@@ -54,9 +34,9 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t bno)
 int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t bno,
 		     dhara_error_t *err)
 {
-	uint32_t addr = (bno << LOG2_BLOCK_SIZE);
+	uint32_t addr = (bno << dhara_nand_log2blocksize(n));
 
-	if (bno >= NUM_BLOCKS)
+	if (bno >= dhara_nand_numblocks(n))
 	{
 		return -1;
 	}
@@ -70,35 +50,35 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t bno,
 int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p,
 		    const uint8_t *data, dhara_error_t *err)
 {
-	const int bno = p >> LOG2_PAGES_PER_BLOCK;
-	uint32_t addr = (p << LOG2_PAGE_SIZE);
+	uint32_t bno = p >> n->log2_ppb;
+	uint32_t addr = (p << n->log2_page_size);
 
-	if ((bno < 0) || (bno >= NUM_BLOCKS)) {
+	if ((bno < 0) || (bno >= dhara_nand_numblocks(n))) {
 		return -1;
 	}
 
 
 	//printf("Write adr: %d\r\n", (int) addr);
 
-	return qspi.Write((uint8_t *) data, addr, PAGE_SIZE);
+	return qspi.Write((uint8_t *) data, addr, dhara_nand_pagesize(n));
 
 }
 
 //--------------------------------------------
 int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 {
-	const int bno = p >> LOG2_PAGES_PER_BLOCK;
+	uint32_t bno = p >> n->log2_ppb;
 
 	uint32_t probe = 0x00000000;
 
-	uint32_t size_block = (1 << LOG2_BLOCK_SIZE);
+	uint32_t size_block = dhara_nand_blocksize(n);
 
-	if ((bno < 0) || (bno >= NUM_BLOCKS))
+	if ((bno < 0) || (bno >= dhara_nand_numblocks(n)))
 	{
 		return false;
 	}
 
-	uint32_t adr = (bno << LOG2_BLOCK_SIZE);
+	uint32_t adr = (bno << dhara_nand_log2blocksize(n));
 
 
 	for (uint32_t i = 0; i < size_block; i += sizeof(probe))
@@ -126,16 +106,16 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p,
 		    size_t offset, size_t length,
 		    uint8_t *data, dhara_error_t *err)
 {
-	const int bno = p >> LOG2_PAGES_PER_BLOCK;
-	uint32_t addr = (p << LOG2_PAGE_SIZE);
+	uint32_t bno = p >> n->log2_ppb;
+	uint32_t addr = (p << n->log2_page_size);
 
-	if ((bno < 0) || (bno >= NUM_BLOCKS))
+	if ((bno < 0) || (bno >= dhara_nand_numblocks(n)))
 	{
 		return -1;
 	}
 
-	if ((offset > PAGE_SIZE) || (length > PAGE_SIZE) ||
-	    (offset + length > PAGE_SIZE))
+	if ((offset > dhara_nand_pagesize(n)) || (length > dhara_nand_pagesize(n)) ||
+	    (offset + length > dhara_nand_pagesize(n)))
 	{
 		return -1;
 	}
@@ -152,11 +132,14 @@ int dhara_nand_copy(const struct dhara_nand *n,
 		    dhara_page_t src, dhara_page_t dst,
 		    dhara_error_t *err)
 {
-	uint8_t buf[PAGE_SIZE];
+	uint8_t *buf = new uint8_t [dhara_nand_pagesize(n)];
 
-	if ((dhara_nand_read(n, src, 0, PAGE_SIZE, buf, err) < 0) ||
+	if ((dhara_nand_read(n, src, 0, dhara_nand_pagesize(n), buf, err) < 0) ||
 	    (dhara_nand_prog(n, dst, buf, err) < 0))
 		return -1;
+
+
+	delete[] buf;
 
 	return 0;
 }
