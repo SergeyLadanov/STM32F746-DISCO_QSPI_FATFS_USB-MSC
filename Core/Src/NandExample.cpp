@@ -60,10 +60,6 @@ int NandExample::BlockIsFree(dhara_page_t p)
 {
 	uint32_t bno = p >> log2_ppb;
 
-	uint32_t probe = 0x00000000;
-
-	uint32_t size_block = GetBlockSize();
-
 	if ((bno < 0) || (bno >= GetNumBlocks()))
 	{
 		return false;
@@ -71,23 +67,47 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 	uint32_t adr = (bno << GetLog2BlockSize());
 
+	uint32_t *buf = new uint32_t [GetPageSize() / sizeof(uint32_t)];
 
-	for (uint32_t i = 0; i < size_block; i += sizeof(probe))
+	uint32_t offset = 0;
+
+	int result = true;
+
+
+
+	for (int i = 0; i < (1 << log2_ppb); i ++)
 	{
-		if (Flash->Read((uint8_t *) &probe, adr + i, sizeof(probe)))
+		if (Flash->Read((uint8_t *) buf, adr + offset, GetPageSize()))
 		{
-			return false;
+			result = false;
+			break;
 		}
 
-		if (probe != 0xFFFFFFFF)
+		for (uint32_t k = 0; k < (GetPageSize() / sizeof(uint32_t)); k++)
 		{
-			//printf("Page is not erased!\r\n");
-			return false;
+			if (buf[k] != 0xFFFFFFFF)
+			{
+				result = false;
+				break;
+			}
 		}
+
+		offset += GetPageSize();
 	}
 
-	//printf("Page is erased!\r\n");
-	return true;
+//	if (result)
+//	{
+//		printf("Page is erased!\r\n");
+//	}
+//	else
+//	{
+//		printf("Page is not erased!\r\n");
+//	}
+
+	delete[] buf;
+
+
+	return result;
 }
 
 
