@@ -27,8 +27,8 @@
 #include "stm32746g_discovery_qspi.h"
 #include <stdio.h>
 #include "QSPI_DISCO_F746NG.h"
-#include "map.h"
-#include "nand.h"
+#include "DharaFTL.hpp"
+#include "NandExample.hpp"
 
 /* USER CODE END Includes */
 
@@ -39,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define USE_WRITE_TEST 0
+#define USE_WRITE_TEST 1
 #define USE_READ_TEST 1
 /* USER CODE END PD */
 
@@ -83,15 +83,10 @@ char ReadBuffer[128];
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-QSPI_DISCO_F746NG qspi;
-FRESULT Status;
-UINT control;
-struct dhara_map map;
-
-
-
-
-
+static QSPI_DISCO_F746NG qspi;
+static FRESULT Status;
+static UINT control;
+DharaFTL Map;
 
 /* USER CODE END 0 */
 
@@ -348,23 +343,18 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void Dhara_Init(void)
 {
-	static const struct dhara_nand nand =
-	{
-		.log2_page_size	= 9,
-		.log2_ppb		= 3,
-		.num_blocks		= 4096
-	};
-
+	static NandExample NandFtlDriver(9, 3, 4096, &qspi);
 	static uint8_t page_buf[512];
 
 	printf("Map init\n");
-	dhara_map_init(&map, &nand, page_buf, 4);
 
-	if (dhara_map_resume(&map, NULL))
+	if (Map.Init(&NandFtlDriver, page_buf, 4))
 	{
 		Error_Handler();
 	}
-	printf("Capacity: %lu\n", dhara_map_capacity(&map));
+
+	printf("Capacity: %lu\n", Map.GetBlockNum());
+	printf("Memory size: %lu\n", Map.GetMemSize());
 }
 /* USER CODE END 4 */
 

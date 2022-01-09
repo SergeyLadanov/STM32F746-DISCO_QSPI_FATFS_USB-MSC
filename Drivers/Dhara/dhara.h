@@ -13,40 +13,43 @@ extern "C"
 {
 #endif
 
+#define DHARA_USE_CPP_LAYER 1
+
 #include "map.h"
 #include "nand.h"
+#include <stdint.h>
 
 
 
-inline uint32_t dhara_nand_pagesize(const struct dhara_nand *n)
+static inline uint32_t dhara_nand_pagesize(const struct dhara_nand *n)
 {
 	return (1 << n->log2_page_size);
 }
 
-inline uint32_t dhara_nand_blocksize(const struct dhara_nand *n)
+static inline uint32_t dhara_nand_blocksize(const struct dhara_nand *n)
 {
 	return (1 << (n->log2_page_size + n->log2_ppb));
 }
 
-inline uint32_t dhara_nand_log2blocksize(const struct dhara_nand *n)
+static inline uint32_t dhara_nand_log2blocksize(const struct dhara_nand *n)
 {
 	return (n->log2_page_size + n->log2_ppb);
 }
 
 
-inline uint32_t dhara_nand_numblocks(const struct dhara_nand *n)
+static inline uint32_t dhara_nand_numblocks(const struct dhara_nand *n)
 {
 	return n->num_blocks;
 }
 
 
-inline uint32_t dhara_map_memsize(const struct dhara_map *m)
+static inline uint32_t dhara_map_memsize(const struct dhara_map *m)
 {
 	return dhara_map_capacity(m) * dhara_nand_pagesize(m->journal.nand);
 }
 
 
-inline uint32_t dhara_map_blocksize(const struct dhara_map *m)
+static inline uint32_t dhara_map_blocksize(const struct dhara_map *m)
 {
 	return dhara_nand_pagesize(m->journal.nand);
 }
