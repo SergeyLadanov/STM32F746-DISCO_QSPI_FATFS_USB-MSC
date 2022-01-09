@@ -62,7 +62,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 	uint32_t probe = 0x00000000;
 
-	uint32_t size_block = GetPageSize() / 4;
+	uint32_t size_block = GetBlockSize();
 
 	if ((bno < 0) || (bno >= GetNumBlocks()))
 	{

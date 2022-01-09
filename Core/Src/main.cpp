@@ -39,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define USE_WRITE_TEST 0
+#define USE_WRITE_TEST 1
 #define USE_READ_TEST 1
 /* USER CODE END PD */
 
@@ -147,6 +147,8 @@ int main(void)
 #endif // DEBUG
 
   }
+
+  //qspi.Erase_Chip();
 
 
   Dhara_Init();
@@ -350,7 +352,11 @@ static void Dhara_Init(void)
 
 	if (Map.Init(&NandFtlDriver, page_buf, 4))
 	{
-		Error_Handler();
+		printf("Map init error\r\n");
+	}
+	else
+	{
+		printf("Map init success\r\n");
 	}
 
 	printf("Capacity: %lu\n", Map.GetBlockNum());
