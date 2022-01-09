@@ -37,7 +37,7 @@
 #include <string.h>
 #include "ff_gen_drv.h"
 #include "QSPI_DISCO_F746NG.h"
-#include "dhara.h"
+#include "DharaFTL.hpp"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
@@ -45,7 +45,7 @@
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
 
-extern struct dhara_map map;
+extern DharaFTL Map;
 
 /* USER CODE END DECL */
 
@@ -103,7 +103,7 @@ DSTATUS USER_status (
 
     dhara_error_t err;
 
-    if (!dhara_map_sync(&map, &err))
+    if (!Map.Sync(&err))
     {
     	Stat &= ~STA_NOINIT;
     }
@@ -130,7 +130,7 @@ DRESULT USER_read (
 {
   /* USER CODE BEGIN READ */
 
-	if (dhara_read_blocks(&map, (uint8_t *) buff, sector, count))
+	if (Map.ReadBlocks((uint8_t *) buff, sector, count))
 	{
 		return RES_ERROR;
 	}
@@ -158,7 +158,7 @@ DRESULT USER_write (
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
 
-	if (dhara_write_blocks(&map, (uint8_t *) buff, sector, count))
+	if (Map.WriteBlocks((uint8_t *) buff, sector, count))
 	{
 		return RES_ERROR;
 	}
@@ -192,7 +192,7 @@ DRESULT USER_ioctl (
 		/* Make sure that no pending write process */
 	case CTRL_SYNC :
 
-		if (!dhara_map_sync(&map, &err))
+		if (!Map.Sync(&err))
 		{
 			res = RES_OK;
 		}
@@ -201,13 +201,13 @@ DRESULT USER_ioctl (
 
 		/* Get number of sectors on the disk (DWORD) */
 	case GET_SECTOR_COUNT :
-		*(DWORD*)buff = dhara_map_capacity(&map);
+		*(DWORD*)buff = Map.GetBlockNum();
 		res = RES_OK;
 		break;
 
 		/* Get R/W sector size (WORD) */
 	case GET_SECTOR_SIZE :
-		*(WORD*)buff = dhara_map_blocksize(&map);
+		*(WORD*)buff = Map.GetBlockSize();
 		res = RES_OK;
 		break;
 
