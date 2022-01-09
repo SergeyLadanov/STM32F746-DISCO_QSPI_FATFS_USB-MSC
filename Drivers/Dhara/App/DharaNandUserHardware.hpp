@@ -9,7 +9,6 @@
 #define DHARA_APP_DHARANANDUSERHARDWARE_HPP_
 
 #include "DharaFTL.hpp"
-#include "QSPI_DISCO_F746NG.h"
 
 #if DHARA_USE_CPP_LAYER != 0
 
