@@ -39,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define USE_WRITE_TEST 1
+#define USE_WRITE_TEST 0
 #define USE_READ_TEST 1
 /* USER CODE END PD */
 
