@@ -11,6 +11,8 @@
 #include "dhara.h"
 #include "DharaNandDriver.hpp"
 
+#if DHARA_USE_CPP_LAYER != 0
+
 class DharaFTL
 {
 private:
@@ -63,5 +65,7 @@ public:
         return dhara_write_blocks(&Map, buf, blk_addr, blk_len);
     }
 };
+
+#endif
 
 #endif /* DHARA_APP_DHARAFTL_HPP_ */

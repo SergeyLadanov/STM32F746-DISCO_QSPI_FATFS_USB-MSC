@@ -10,6 +10,8 @@
 
 #include "dhara.h"
 
+#if DHARA_USE_CPP_LAYER != 0
+
 class DharaNandDriver : public dhara_nand
 {
 public:
@@ -48,5 +50,7 @@ public:
         return dhara_nand_numblocks(this);
     }
 };
+
+#endif
 
 #endif /* DHARA_APP_DHARANANDDRIVER_HPP_ */
