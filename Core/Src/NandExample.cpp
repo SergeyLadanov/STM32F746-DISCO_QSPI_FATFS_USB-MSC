@@ -36,7 +36,7 @@ int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 	{
 		return -1;
 	}
-	printf("Erasing page: %d!\r\n", (int) addr);
+	//printf("Erasing page: %d!\r\n", (int) addr);
 	return Flash->Erase_Block(addr);
 }
 
@@ -51,7 +51,7 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 		return -1;
 	}
 
-	printf("Write adr: %d\r\n", (int) addr);
+	//printf("Write adr: %d\r\n", (int) addr);
 	return Flash->Write((uint8_t *) data, addr, GetPageSize());
 }
 
@@ -86,7 +86,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 		}
 	}
 
-	printf("Page is erased!\r\n");
+	//printf("Page is erased!\r\n");
 	return true;
 }
 
@@ -107,7 +107,7 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 	}
 
 
-	printf("Read adr: %d\r\n", (int) (addr + offset));
+	//printf("Read adr: %d\r\n", (int) (addr + offset));
 
 	return Flash->Read(data, addr + offset, length);
 }

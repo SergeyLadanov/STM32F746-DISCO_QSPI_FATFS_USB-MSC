@@ -192,7 +192,7 @@ DRESULT USER_ioctl (
 		/* Make sure that no pending write process */
 	case CTRL_SYNC :
 
-		if (Map.Sync(&err))
+		if (!Map.Sync(&err))
 		{
 			res = RES_OK;
 		}
