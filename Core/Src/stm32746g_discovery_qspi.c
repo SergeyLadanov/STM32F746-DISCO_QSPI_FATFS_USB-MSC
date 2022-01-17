@@ -150,10 +150,10 @@ uint8_t BSP_QSPI_Init(void)
 //  }
  
   /* Configuration of the dummy cucles on QSPI memory side */
-  if (QSPI_DummyCyclesCfg(&QSPIHandle) != QSPI_OK)
-  {
-    return QSPI_NOT_SUPPORTED;
-  }
+//  if (QSPI_DummyCyclesCfg(&QSPIHandle) != QSPI_OK)
+//  {
+//    return QSPI_NOT_SUPPORTED;
+//  }
   
   return QSPI_OK;
 }
@@ -1008,6 +1008,40 @@ uint8_t BSP_GetFeature(uint8_t address, uint8_t *pData)
 }
 
 
+uint8_t BSP_SetFeature(uint8_t address, uint8_t Data)
+{
+	QSPI_CommandTypeDef sCommand;
+
+	/* Initialize the read command */
+	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+	sCommand.Instruction       = 0x1F;
+	sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
+	sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
+	sCommand.Address           = address;
+	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+	sCommand.DataMode          = QSPI_DATA_1_LINE;
+	sCommand.DummyCycles       = 0;
+	sCommand.NbData            = 1;
+	sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
+	sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+
+	/* Configure the command */
+	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	/* Reception of the data */
+	if (HAL_QSPI_Transmit(&QSPIHandle, &Data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+  return QSPI_OK;
+}
+
+
 
 
 uint8_t BSP_PageRead(uint32_t RowAddr)
@@ -1166,6 +1200,8 @@ uint8_t BSP_QSPI_EraseBlock(uint32_t addr)
 	{
 		return QSPI_ERROR;
 	}
+
+	HAL_Delay(1000);
 
 	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
