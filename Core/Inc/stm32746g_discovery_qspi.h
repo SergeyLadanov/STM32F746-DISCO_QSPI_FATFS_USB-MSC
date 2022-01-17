@@ -113,6 +113,7 @@ uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size);
 uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr);
 uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress);
 uint8_t BSP_QSPI_UnlockAllBlocks(void);
+void BSP_QSPI_EraseChip(void);
 
 
 /**

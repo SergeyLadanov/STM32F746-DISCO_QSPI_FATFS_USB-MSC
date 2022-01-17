@@ -39,24 +39,6 @@ private:
 
 public:
 
-
-	inline uint32_t GetCapacity(void)
-	{
-		return Capacity;
-	}
-
-
-	inline uint32_t GetSectorsNumber(void)
-	{
-		return (GetCapacity() / GetSectorSize());
-	}
-
-
-	inline uint32_t GetSectorSize(void)
-	{
-		return SectorSize;
-	}
-
   /**
     * @brief  Initializes the QSPI interface.
     * @retval QSPI memory status
@@ -66,38 +48,38 @@ public:
   /**
     * @brief  De-Initializes the QSPI interface.
     * @retval QSPI memory status
-    */
-  uint8_t DeInit(void);
+//    */
+//  uint8_t DeInit(void);
 
 
-  /**
-    * @brief  Writes an amount of data to the QSPI memory.
-    * @param  pData: Pointer to data to be written
-    * @param  WriteAddr: Write start address
-    * @param  Size: Size of data to write    
-    * @retval QSPI memory status
-    */
-  uint8_t Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
-
-  /**
-    * @brief  Erases the specified block of the QSPI memory. 
-    * @param  BlockAddress: Block address to erase  
-    * @retval QSPI memory status
-    */
-  uint8_t Erase_Block(uint32_t BlockAddress);
-
-
-  /**
-    * @brief  Reads current status of the QSPI memory.
-    * @retval QSPI memory status
-    */
-  uint8_t GetStatus(void);
-
-  /**
-    * @brief  Return the configuration of the QSPI memory.
-    * @param  pInfo: pointer on the configuration structure  
-    * @retval QSPI memory status
-    */
+//  /**
+//    * @brief  Writes an amount of data to the QSPI memory.
+//    * @param  pData: Pointer to data to be written
+//    * @param  WriteAddr: Write start address
+//    * @param  Size: Size of data to write
+//    * @retval QSPI memory status
+//    */
+//  uint8_t Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
+//
+//  /**
+//    * @brief  Erases the specified block of the QSPI memory.
+//    * @param  BlockAddress: Block address to erase
+//    * @retval QSPI memory status
+//    */
+//  uint8_t Erase_Block(uint32_t BlockAddress);
+//
+//
+//  /**
+//    * @brief  Reads current status of the QSPI memory.
+//    * @retval QSPI memory status
+//    */
+//  uint8_t GetStatus(void);
+//
+//  /**
+//    * @brief  Return the configuration of the QSPI memory.
+//    * @param  pInfo: pointer on the configuration structure
+//    * @retval QSPI memory status
+//    */
   uint8_t GetInfo(QSPI_Info* pInfo);
 
 private:

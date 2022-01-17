@@ -74,8 +74,8 @@ int __io_putchar(int ch)
 
 }
 
-char buffer[128] = "QSPI test with FAT_FS";
-char ReadBuffer[128] = {0xAA};
+char buffer[2048] = "QSPI test with FAT_FS";
+char ReadBuffer[2048] = {0xAA};
 
 
 
@@ -157,67 +157,67 @@ int main(void)
   {
 	  printf("Success unlocking blocks\n\r");
   }
-
-  if (BSP_QSPI_GetFeature(0xA0, (uint8_t *) &ReadBuffer[0]))
-  {
-	  printf("Failed getting feature\n\r");
-
-  }
-  else
-  {
-	  printf("Success getting feature\n\r");
-	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
-  }
-
-  if (BSP_QSPI_EraseBlock(0))
-  {
-	  printf("Failed erasing block\r\n");
-  }
-  else
-  {
-	  printf("Success erasing block\r\n");
-  }
-
-
-
-  if (BSP_QSPI_WriteToBuf((uint8_t *) buffer, 0, 2048))
-  {
-	  printf("Failed to write data in buf\r\n");
-  }
-  else
-  {
-	  printf("Success writing data in buf\r\n");
-
-	  if (BSP_QSPI_ProgramExecute(0))
-	  {
-		  printf("Failed programming memory\r\n");
-	  }
-	  else
-	  {
-		  printf("Success programming memory\r\n");
-	  }
-
-  }
-
-  if (BSP_QSPI_ReadPage(0))
-  {
-	  printf("Failed page read\n\r");
-  }
-  else
-  {
-	  printf("Success page read\n\r");
-  }
-
-
-
-  if (BSP_QSPI_ReadFromBuf((uint8_t *) ReadBuffer, 0, sizeof(ReadBuffer)))
-  {
-	  printf("Failed buffer read\n\r");
-  }
-  else
-  {
-	  printf("Success buffer read\n\r");
-  }
+//
+//  if (BSP_QSPI_GetFeature(0xA0, (uint8_t *) &ReadBuffer[0]))
+//  {
+//	  printf("Failed getting feature\n\r");
+//
+//  }
+//  else
+//  {
+//	  printf("Success getting feature\n\r");
+//	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
+//  }
+//
+//  if (BSP_QSPI_EraseBlock(0))
+//  {
+//	  printf("Failed erasing block\r\n");
+//  }
+//  else
+//  {
+//	  printf("Success erasing block\r\n");
+//  }
+//
+//
+//
+//  if (BSP_QSPI_WriteToBuf((uint8_t *) buffer, 0, 2048))
+//  {
+//	  printf("Failed to write data in buf\r\n");
+//  }
+//  else
+//  {
+//	  printf("Success writing data in buf\r\n");
+//
+//	  if (BSP_QSPI_ProgramExecute(0))
+//	  {
+//		  printf("Failed programming memory\r\n");
+//	  }
+//	  else
+//	  {
+//		  printf("Success programming memory\r\n");
+//	  }
+//
+//  }
+//
+//  if (BSP_QSPI_ReadPage(0))
+//  {
+//	  printf("Failed page read\n\r");
+//  }
+//  else
+//  {
+//	  printf("Success page read\n\r");
+//  }
+//
+//
+//
+//  if (BSP_QSPI_ReadFromBuf((uint8_t *) ReadBuffer, 0, sizeof(ReadBuffer)))
+//  {
+//	  printf("Failed buffer read\n\r");
+//  }
+//  else
+//  {
+//	  printf("Success buffer read\n\r");
+//  }
 
 
 
@@ -228,82 +228,104 @@ int main(void)
   //qspi.Erase_Chip();
 
 
-//  Dhara_Init();
+  Dhara_Init();
+
+//  for (uint8_t i = 0; i < 10; i++)
+//  {
 //
-//  	for (uint8_t i = 0; i < 3; i++)
-//  	{
-//		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
-//		{
-//		  printf("Mounted!\r\n");
-//
-//#if USE_WRITE_TEST != 0
-//		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
-//		  {
-//			  printf("File opened!\r\n");
-//			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
-//			  {
-//				  printf("Write success!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("Write failed!\r\n");
-//			  }
-//
-//			  if (f_close(&USERFile) == FR_OK)
-//			  {
-//				  printf("File was closed!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("File was not closed!\r\n");
-//			  }
-//		  }
-//		  else
-//		  {
-//			  printf("File was not opened!\r\n");
-//		  }
-//#endif
+//	  if (Map.Write(0, (uint8_t *) buffer))
+//	  {
+//		  printf("Error of map write");
+//	  }
 //
 //
-//#if USE_READ_TEST != 0
-//		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
-//		  {
-//			  printf("File opened!\r\n");
+//	  if (Map.Read(0, (uint8_t *) ReadBuffer))
+//	  {
+//		  printf("Error of map read");
+//	  }
 //
+//	  printf("Result is: %s\r\n", ReadBuffer);
 //
-//			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
-//			  {
-//				  printf("Read success!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("Read failed!\r\n");
-//			  }
+//	  HAL_Delay(5000);
+//  }
 //
-//			  if (f_close(&USERFile) == FR_OK)
-//			  {
-//				  printf("File was closed!\r\n");
-//			  }
-//			  else
-//			  {
-//				  printf("File was not closed!\r\n");
-//			  }
-//		  }
-//		  else
-//		  {
-//			  printf("File was not opened!\r\n");
-//		  }
-//#endif
-//
-//		  break;
-//		}
-//		else
-//		{
-//		  uint8_t buf[4096];
-//		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
-//		  printf("Not mounted!\r\n");
-//		}
-//  	}
+//  printf("Finish\r\n");
+
+
+  	for (uint8_t i = 0; i < 3; i++)
+  	{
+		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
+		{
+		  printf("Mounted!\r\n");
+
+#if USE_WRITE_TEST != 0
+		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
+		  {
+			  printf("File opened!\r\n");
+			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
+			  {
+				  printf("Write success!\r\n");
+			  }
+			  else
+			  {
+				  printf("Write failed!\r\n");
+			  }
+
+			  if (f_close(&USERFile) == FR_OK)
+			  {
+				  printf("File was closed!\r\n");
+			  }
+			  else
+			  {
+				  printf("File was not closed!\r\n");
+			  }
+		  }
+		  else
+		  {
+			  printf("File was not opened!\r\n");
+		  }
+#endif
+
+
+#if USE_READ_TEST != 0
+		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
+		  {
+			  printf("File opened!\r\n");
+
+
+			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
+			  {
+				  printf("Read success!\r\n");
+			  }
+			  else
+			  {
+				  printf("Read failed!\r\n");
+			  }
+
+			  if (f_close(&USERFile) == FR_OK)
+			  {
+				  printf("File was closed!\r\n");
+			  }
+			  else
+			  {
+				  printf("File was not closed!\r\n");
+			  }
+		  }
+		  else
+		  {
+			  printf("File was not opened!\r\n");
+		  }
+#endif
+
+		  break;
+		}
+		else
+		{
+		  uint8_t buf[4096];
+		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
+		  printf("Not mounted!\r\n");
+		}
+  	}
 
   /* USER CODE END 2 */
 
@@ -422,12 +444,15 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void Dhara_Init(void)
 {
-	constexpr uint32_t LOG_PAGE_SIZE = 512;
-	constexpr uint32_t PHYSICAL_BLOCK_SIZE = 4096;
+	constexpr uint32_t LOG_PAGE_SIZE = 2048;
+	constexpr uint32_t PHYSICAL_BLOCK_SIZE = 128 * 1024;
 	constexpr uint32_t PAGES_PER_BLOCK = PHYSICAL_BLOCK_SIZE / LOG_PAGE_SIZE;
 
-	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 4096, &qspi);
+	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 2048, &qspi);
 	static uint8_t page_buf[LOG_PAGE_SIZE];
+
+
+	//BSP_QSPI_EraseChip();
 
 	printf("Map init\n");
 

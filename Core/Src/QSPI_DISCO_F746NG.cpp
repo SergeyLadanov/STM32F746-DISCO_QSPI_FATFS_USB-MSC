@@ -47,27 +47,27 @@ uint8_t QSPI_DISCO_F746NG::Init(void)
   return QSPI_OK;
 }
 
-uint8_t QSPI_DISCO_F746NG::DeInit(void)
-{
-  return BSP_QSPI_DeInit();
-}
-
-
-uint8_t QSPI_DISCO_F746NG::Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
-{
-  return BSP_QSPI_Write(pData, WriteAddr, Size);
-}
-
-uint8_t QSPI_DISCO_F746NG::Erase_Block(uint32_t BlockAddress)
-{
-  return BSP_QSPI_EraseBlock(BlockAddress);
-}
-
-uint8_t QSPI_DISCO_F746NG::GetStatus(void)
-{
-  return BSP_QSPI_GetStatus();
-}
-
+//uint8_t QSPI_DISCO_F746NG::DeInit(void)
+//{
+//  return BSP_QSPI_DeInit();
+//}
+//
+//
+//uint8_t QSPI_DISCO_F746NG::Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
+//{
+//  return BSP_QSPI_Write(pData, WriteAddr, Size);
+//}
+//
+//uint8_t QSPI_DISCO_F746NG::Erase_Block(uint32_t BlockAddress)
+//{
+//  return BSP_QSPI_EraseBlock(BlockAddress);
+//}
+//
+//uint8_t QSPI_DISCO_F746NG::GetStatus(void)
+//{
+//  return BSP_QSPI_GetStatus();
+//}
+//
 uint8_t QSPI_DISCO_F746NG::GetInfo(QSPI_Info* pInfo)
 {
   return BSP_QSPI_GetInfo(pInfo);

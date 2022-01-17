@@ -939,6 +939,16 @@ uint8_t BSP_QSPI_UnlockAllBlocks(void)
 }
 
 
+void BSP_QSPI_EraseChip(void)
+{
+	uint32_t offset = 0;
+	for(uint32_t i = 0; i < 2048; i++)
+	{
+		BSP_QSPI_EraseBlock(offset);
+		offset += 64;
+	}
+}
+
 
 
 
