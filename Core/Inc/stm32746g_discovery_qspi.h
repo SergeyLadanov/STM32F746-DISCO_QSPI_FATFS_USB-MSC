@@ -109,6 +109,16 @@ uint8_t BSP_QSPI_EnableMemoryMappedMode(void);
 uint8_t BSP_QSPI_SuspendErase(void);
 uint8_t BSP_QSPI_ResumeErase (void);
 
+
+
+
+
+uint8_t BSP_GetFeature(uint8_t address, uint8_t *pData);
+uint8_t BSP_PageRead(uint32_t RowAddr);
+uint8_t BSP_ReadFromPage(uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
+uint8_t BSP_WriteToPage(uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
+uint8_t BSP_QSPI_ProgramExecute(uint32_t addr);
+
 /**
   * @}
   */

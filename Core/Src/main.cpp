@@ -75,7 +75,7 @@ int __io_putchar(int ch)
 }
 
 char buffer[128] = "QSPI test with FAT_FS";
-char ReadBuffer[128];
+char ReadBuffer[128] = {0xAA};
 
 
 
@@ -118,7 +118,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_QUADSPI_Init();
+//  MX_QUADSPI_Init();
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
@@ -148,85 +148,143 @@ int main(void)
 
   }
 
+
+  if (BSP_GetFeature(0xB0, (uint8_t *) &ReadBuffer[0]))
+  {
+	  printf("Failed getting feature\n\r");
+
+  }
+  else
+  {
+	  printf("Success getting feature\n\r");
+	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
+  }
+
+
+//  if (BSP_WriteToPage((uint8_t *) buffer, 0, 2048))
+//  {
+//	  printf("Failed to write data in buf\t\n");
+//  }
+//  else
+//  {
+//	  printf("Success writing data in buf\t\n");
+//	  if (BSP_QSPI_ProgramExecute(0))
+//	  {
+//		  printf("Failed programming memory\t\n");
+//	  }
+//	  else
+//	  {
+//		  printf("Success programming memory\t\n");
+//	  }
+//
+//  }
+
+
+  if (BSP_PageRead(0))
+  {
+	  printf("Failed page read\n\r");
+  }
+  else
+  {
+	  printf("Success page read\n\r");
+  }
+
+
+
+  if (BSP_ReadFromPage((uint8_t *) ReadBuffer, 0, sizeof(ReadBuffer)))
+  {
+	  printf("Failed buffer read\n\r");
+  }
+  else
+  {
+	  printf("Success buffer read\n\r");
+  }
+
+
+
+
+
+  printf("Finish\r\n");
+
   //qspi.Erase_Chip();
 
 
-  Dhara_Init();
-
-  	for (uint8_t i = 0; i < 3; i++)
-  	{
-		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
-		{
-		  printf("Mounted!\r\n");
-
-#if USE_WRITE_TEST != 0
-		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
-		  {
-			  printf("File opened!\r\n");
-			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
-			  {
-				  printf("Write success!\r\n");
-			  }
-			  else
-			  {
-				  printf("Write failed!\r\n");
-			  }
-
-			  if (f_close(&USERFile) == FR_OK)
-			  {
-				  printf("File was closed!\r\n");
-			  }
-			  else
-			  {
-				  printf("File was not closed!\r\n");
-			  }
-		  }
-		  else
-		  {
-			  printf("File was not opened!\r\n");
-		  }
-#endif
-
-
-#if USE_READ_TEST != 0
-		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
-		  {
-			  printf("File opened!\r\n");
-
-
-			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
-			  {
-				  printf("Read success!\r\n");
-			  }
-			  else
-			  {
-				  printf("Read failed!\r\n");
-			  }
-
-			  if (f_close(&USERFile) == FR_OK)
-			  {
-				  printf("File was closed!\r\n");
-			  }
-			  else
-			  {
-				  printf("File was not closed!\r\n");
-			  }
-		  }
-		  else
-		  {
-			  printf("File was not opened!\r\n");
-		  }
-#endif
-
-		  break;
-		}
-		else
-		{
-		  uint8_t buf[4096];
-		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
-		  printf("Not mounted!\r\n");
-		}
-  	}
+//  Dhara_Init();
+//
+//  	for (uint8_t i = 0; i < 3; i++)
+//  	{
+//		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
+//		{
+//		  printf("Mounted!\r\n");
+//
+//#if USE_WRITE_TEST != 0
+//		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
+//		  {
+//			  printf("File opened!\r\n");
+//			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
+//			  {
+//				  printf("Write success!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("Write failed!\r\n");
+//			  }
+//
+//			  if (f_close(&USERFile) == FR_OK)
+//			  {
+//				  printf("File was closed!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("File was not closed!\r\n");
+//			  }
+//		  }
+//		  else
+//		  {
+//			  printf("File was not opened!\r\n");
+//		  }
+//#endif
+//
+//
+//#if USE_READ_TEST != 0
+//		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
+//		  {
+//			  printf("File opened!\r\n");
+//
+//
+//			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
+//			  {
+//				  printf("Read success!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("Read failed!\r\n");
+//			  }
+//
+//			  if (f_close(&USERFile) == FR_OK)
+//			  {
+//				  printf("File was closed!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("File was not closed!\r\n");
+//			  }
+//		  }
+//		  else
+//		  {
+//			  printf("File was not opened!\r\n");
+//		  }
+//#endif
+//
+//		  break;
+//		}
+//		else
+//		{
+//		  uint8_t buf[4096];
+//		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
+//		  printf("Not mounted!\r\n");
+//		}
+//  	}
 
   /* USER CODE END 2 */
 
