@@ -75,25 +75,25 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 
 
-	for (int i = 0; i < (1 << log2_ppb); i ++)
-	{
-		if (Flash->Read((uint8_t *) buf, adr + offset, GetPageSize()))
-		{
-			result = false;
-			break;
-		}
-
-		for (uint32_t k = 0; k < (GetPageSize() / sizeof(uint32_t)); k++)
-		{
-			if (buf[k] != 0xFFFFFFFF)
-			{
-				result = false;
-				break;
-			}
-		}
-
-		offset += GetPageSize();
-	}
+//	for (int i = 0; i < (1 << log2_ppb); i ++)
+//	{
+//		if (Flash->Read((uint8_t *) buf, adr + offset, GetPageSize()))
+//		{
+//			result = false;
+//			break;
+//		}
+//
+//		for (uint32_t k = 0; k < (GetPageSize() / sizeof(uint32_t)); k++)
+//		{
+//			if (buf[k] != 0xFFFFFFFF)
+//			{
+//				result = false;
+//				break;
+//			}
+//		}
+//
+//		offset += GetPageSize();
+//	}
 
 //	if (result)
 //	{
@@ -129,7 +129,8 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 
 	//printf("Read adr: %d\r\n", (int) (addr + offset));
 
-	return Flash->Read(data, addr + offset, length);
+	//return Flash->Read(data, addr + offset, length);
+	return 0;
 }
 
 

@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    n25q128a.h
+  * @file    TC58CVG1.h
   * @author  MCD Application Team
   * @version V1.0.0
   * @date    29-May-2015
@@ -36,8 +36,8 @@
   */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __N25Q128A_H
-#define __N25Q128A_H
+#ifndef __TC58CVG1_H
+#define __TC58CVG1_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -65,31 +65,37 @@
   * @}
   */ 
 
-/** @defgroup N25Q128A_Exported_Constants
+/** @defgroup TC58CVG1_Exported_Constants
   * @{
   */
    
 /** 
-  * @brief  N25Q128A Configuration  
+  * @brief  TC58CVG1 Configuration
   */  
-#define N25Q128A_FLASH_SIZE                  0x1000000 /* 128 MBits => 16MBytes */
-#define N25Q128A_SECTOR_SIZE                 0x10000   /* 256 sectors of 64KBytes */
-#define N25Q128A_SUBSECTOR_SIZE              0x1000    /* 4096 subsectors of 4kBytes */
-#define N25Q128A_PAGE_SIZE                   0x100     /* 65536 pages of 256 bytes */
+#define TC58CVG1_FLASH_SIZE                  0x10000000 /* 2 GBits => 256MBytes */
+#define TC58CVG1_SECTOR_SIZE                 0x200   /* 256 sectors of 64KBytes */
+#define TC58CVG1_PAGE_SIZE                   0x800     /* 65536 pages of 256 bytes */
 
-#define N25Q128A_DUMMY_CYCLES_READ           8
-#define N25Q128A_DUMMY_CYCLES_READ_QUAD      10
+#define TC58CVG1_DUMMY_CYCLES_READ           8
 
-#define N25Q128A_BULK_ERASE_MAX_TIME         250000
-#define N25Q128A_SECTOR_ERASE_MAX_TIME       3000
-#define N25Q128A_SUBSECTOR_ERASE_MAX_TIME    800
+#define TC58CVG1_BLOCK_ERASE_MAX_TIME        10
+#define TC58CVG1_READ_PAGE_MAX_TIME          35
 
 /** 
   * @brief  N25Q128A Commands  
   */  
 /* Reset Operations */
-#define RESET_ENABLE_CMD                     0x66
-#define RESET_MEMORY_CMD                     0x99
+#define TC58CVG1_RESET_CMD                   0xFF
+
+
+#define TC58CVG1_GET_FEATURES_CMD            0x0F
+#define TC58CVG1_SET_FEATURES_CMD            0x1F
+#define TC58CVG1_READ_PAGE_CMD               0x13
+#define TC58CVG1_PROGRAM_EXECUTE_CMD         0x10
+#define TC58CVG1_ERASE_BLOCK_CMD             0xD8
+
+#define TC58CVG1_PROGRAM_LOADx4_CMD          0x32
+#define TC58CVG1_READ_BUFFERx4_CMD           0x6B
 
 /* Identification Operations */
 #define READ_ID_CMD                          0x9E

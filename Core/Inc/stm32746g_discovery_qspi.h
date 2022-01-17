@@ -46,7 +46,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
-#include "n25q128a.h"
+#include "tc58cvg1.h"
 
 /** @addtogroup BSP
   * @{
@@ -92,34 +92,28 @@ typedef struct {
   * @}
   */
 
+//TC58CVG1S3HRAIJ
+
 /* Exported functions --------------------------------------------------------*/
 /** @defgroup STM32F746G_DISCOVERY_QSPI_Exported_Functions Exported Functions
   * @{
   */
 uint8_t BSP_QSPI_Init        (void);
 uint8_t BSP_QSPI_DeInit      (void);
-uint8_t BSP_QSPI_Read        (uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
 uint8_t BSP_QSPI_Write       (uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
-uint8_t BSP_QSPI_Erase_Block (uint32_t BlockAddress);
-uint8_t BSP_QSPI_Erase_Sector(uint32_t Sector);
-uint8_t BSP_QSPI_Erase_Chip  (void);
 uint8_t BSP_QSPI_GetStatus   (void);
 uint8_t BSP_QSPI_GetInfo     (QSPI_Info* pInfo);
-uint8_t BSP_QSPI_EnableMemoryMappedMode(void);
-uint8_t BSP_QSPI_SuspendErase(void);
-uint8_t BSP_QSPI_ResumeErase (void);
 
+uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData);
+uint8_t BSP_QSPI_SetFeature(uint8_t address, uint8_t Data);
+uint8_t BSP_QSPI_ReadPage(uint32_t RowAddr);
+uint8_t BSP_QSPI_CheckReadPage(uint32_t RowAddr);
+uint8_t BSP_QSPI_ReadFromBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size);
+uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size);
+uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr);
+uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress);
+uint8_t BSP_QSPI_UnlockAllBlocks(void);
 
-
-//TC58CVG1S3HRAIJ
-
-uint8_t BSP_GetFeature(uint8_t address, uint8_t *pData);
-uint8_t BSP_SetFeature(uint8_t address, uint8_t Data);
-uint8_t BSP_PageRead(uint32_t RowAddr);
-uint8_t BSP_ReadFromPage(uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
-uint8_t BSP_WriteToPage(uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
-uint8_t BSP_QSPI_ProgramExecute(uint32_t addr);
-uint8_t BSP_QSPI_EraseBlock(uint32_t addr);
 
 /**
   * @}

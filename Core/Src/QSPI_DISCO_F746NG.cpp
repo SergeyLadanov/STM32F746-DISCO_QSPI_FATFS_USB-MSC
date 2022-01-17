@@ -52,10 +52,6 @@ uint8_t QSPI_DISCO_F746NG::DeInit(void)
   return BSP_QSPI_DeInit();
 }
 
-uint8_t QSPI_DISCO_F746NG::Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
-{
-  return BSP_QSPI_Read(pData, ReadAddr, Size);
-}
 
 uint8_t QSPI_DISCO_F746NG::Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
 {
@@ -64,17 +60,7 @@ uint8_t QSPI_DISCO_F746NG::Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Si
 
 uint8_t QSPI_DISCO_F746NG::Erase_Block(uint32_t BlockAddress)
 {
-  return BSP_QSPI_Erase_Block(BlockAddress);
-}
-
-uint8_t QSPI_DISCO_F746NG::Erase_Sector(uint32_t Sector)
-{
-  return BSP_QSPI_Erase_Sector(Sector);
-}
-
-uint8_t QSPI_DISCO_F746NG::Erase_Chip(void)
-{
-  return BSP_QSPI_Erase_Chip();
+  return BSP_QSPI_EraseBlock(BlockAddress);
 }
 
 uint8_t QSPI_DISCO_F746NG::GetStatus(void)
@@ -87,66 +73,6 @@ uint8_t QSPI_DISCO_F746NG::GetInfo(QSPI_Info* pInfo)
   return BSP_QSPI_GetInfo(pInfo);
 }
 
-uint8_t QSPI_DISCO_F746NG::EnableMemoryMappedMode(void)
-{
-  return BSP_QSPI_EnableMemoryMappedMode();
-}
-
-uint8_t QSPI_DISCO_F746NG::SuspendErase(void)
-{
-  return BSP_QSPI_SuspendErase();
-}
-
-uint8_t QSPI_DISCO_F746NG::ResumeErase(void)
-{
-  return BSP_QSPI_ResumeErase();
-}
-
-
-// Read data blocks
-uint8_t QSPI_DISCO_F746NG::ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
-{
-	uint32_t address =  (sector * GetSectorSize());
-	uint32_t data_read = 0;
-
-	for (uint32_t i = 0; i < count; i++)
-	{
-		if (Read(&buff[data_read], address, GetSectorSize()))
-		{
-			return QSPI_ERROR;
-		}
-
-
-		data_read += GetSectorSize();
-		address += GetSectorSize();
-	}
-
-	return QSPI_OK;
-}
-
-// Write data blocks
-uint8_t QSPI_DISCO_F746NG::WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count)
-{
-	uint32_t address =  (sector * GetSectorSize());
-	uint32_t data_write = 0;
-
-
-	for (uint32_t i = 0; i < count; i++)
-	{
-		Erase_Block(address);
-
-		if (Write((uint8_t *) &buff[data_write], address, GetSectorSize()))
-		{
-			return QSPI_ERROR;
-		}
-
-		data_write += GetSectorSize();
-		address += GetSectorSize();
-	}
-
-
-	return QSPI_OK;
-}
 
 //=================================================================================================================
 // Private methods

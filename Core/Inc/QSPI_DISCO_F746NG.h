@@ -69,14 +69,6 @@ public:
     */
   uint8_t DeInit(void);
 
-  /**
-    * @brief  Reads an amount of data from the QSPI memory.
-    * @param  pData: Pointer to data to be read
-    * @param  ReadAddr: Read start address
-    * @param  Size: Size of data to read    
-    * @retval QSPI memory status
-    */
-  uint8_t Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
 
   /**
     * @brief  Writes an amount of data to the QSPI memory.
@@ -94,23 +86,6 @@ public:
     */
   uint8_t Erase_Block(uint32_t BlockAddress);
 
-  /**
-    * @brief  Erases the specified sector of the QSPI memory. 
-    * @param  Sector: Sector address to erase (0 to 255); 
-    * @retval QSPI memory status
-    * @note This function is non blocking meaning that sector erase
-    *       operation is started but not completed when the function 
-    *       returns. Application has to call GetStatus();
-    *       to know when the device is available again (i.e. erase operation
-    *       completed);.
-    */
-  uint8_t Erase_Sector(uint32_t Sector);
-
-  /**
-    * @brief  Erases the entire QSPI memory.
-    * @retval QSPI memory status
-    */
-  uint8_t Erase_Chip(void);
 
   /**
     * @brief  Reads current status of the QSPI memory.
@@ -124,28 +99,6 @@ public:
     * @retval QSPI memory status
     */
   uint8_t GetInfo(QSPI_Info* pInfo);
-
-  /**
-    * @brief  Configure the QSPI in memory-mapped mode
-    * @retval QSPI memory status
-    */
-  uint8_t EnableMemoryMappedMode(void);
-
-  /**
-    * @brief  This function suspends an ongoing erase command.
-    * @retval QSPI memory status
-    */
-  uint8_t SuspendErase(void);
-
-  /**
-    * @brief  This function resumes a paused erase command.
-    * @retval QSPI memory status
-    */
-  uint8_t ResumeErase(void);
-
-
-  uint8_t ReadBlocks(uint8_t *buff, uint32_t sector, uint32_t count);
-  uint8_t WriteBlocks(uint8_t *buff, uint32_t sector, uint32_t count);
 
 private:
 
