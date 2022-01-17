@@ -74,8 +74,8 @@ int __io_putchar(int ch)
 
 }
 
-char buffer[2048] = "QSPI test with FAT_FS";
-char ReadBuffer[2048] = {0xAA};
+char buffer[128] = "QSPI test with FAT_FS";
+char ReadBuffer[128] = {0xAA};
 
 
 
@@ -157,99 +157,11 @@ int main(void)
   {
 	  printf("Success unlocking blocks\n\r");
   }
-//
-//  if (BSP_QSPI_GetFeature(0xA0, (uint8_t *) &ReadBuffer[0]))
-//  {
-//	  printf("Failed getting feature\n\r");
-//
-//  }
-//  else
-//  {
-//	  printf("Success getting feature\n\r");
-//	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
-//  }
-//
-//  if (BSP_QSPI_EraseBlock(0))
-//  {
-//	  printf("Failed erasing block\r\n");
-//  }
-//  else
-//  {
-//	  printf("Success erasing block\r\n");
-//  }
-//
-//
-//
-//  if (BSP_QSPI_WriteToBuf((uint8_t *) buffer, 0, 2048))
-//  {
-//	  printf("Failed to write data in buf\r\n");
-//  }
-//  else
-//  {
-//	  printf("Success writing data in buf\r\n");
-//
-//	  if (BSP_QSPI_ProgramExecute(0))
-//	  {
-//		  printf("Failed programming memory\r\n");
-//	  }
-//	  else
-//	  {
-//		  printf("Success programming memory\r\n");
-//	  }
-//
-//  }
-//
-//  if (BSP_QSPI_ReadPage(0))
-//  {
-//	  printf("Failed page read\n\r");
-//  }
-//  else
-//  {
-//	  printf("Success page read\n\r");
-//  }
-//
-//
-//
-//  if (BSP_QSPI_ReadFromBuf((uint8_t *) ReadBuffer, 0, sizeof(ReadBuffer)))
-//  {
-//	  printf("Failed buffer read\n\r");
-//  }
-//  else
-//  {
-//	  printf("Success buffer read\n\r");
-//  }
-
-
-
-
 
   printf("Finish\r\n");
 
-  //qspi.Erase_Chip();
-
 
   Dhara_Init();
-
-//  for (uint8_t i = 0; i < 10; i++)
-//  {
-//
-//	  if (Map.Write(0, (uint8_t *) buffer))
-//	  {
-//		  printf("Error of map write");
-//	  }
-//
-//
-//	  if (Map.Read(0, (uint8_t *) ReadBuffer))
-//	  {
-//		  printf("Error of map read");
-//	  }
-//
-//	  printf("Result is: %s\r\n", ReadBuffer);
-//
-//	  HAL_Delay(5000);
-//  }
-//
-//  printf("Finish\r\n");
 
 
   	for (uint8_t i = 0; i < 3; i++)
