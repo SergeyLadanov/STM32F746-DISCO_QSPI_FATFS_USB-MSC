@@ -877,6 +877,58 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
   return QSPI_OK;
 }
 
+
+
+
+
+/**
+  * @brief  This function send a Write Enable and wait it is effective.
+  * @param  hqspi: QSPI handle
+  * @retval None
+  */
+static uint8_t QSPI_WriteDisable(QSPI_HandleTypeDef *hqspi)
+{
+  QSPI_CommandTypeDef     sCommand;
+  QSPI_AutoPollingTypeDef sConfig;
+
+  /* Enable write operations */
+  sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+  sCommand.Instruction       = 0x04;
+  sCommand.AddressMode       = QSPI_ADDRESS_NONE;
+  sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+  sCommand.DataMode          = QSPI_DATA_NONE;
+  sCommand.DummyCycles       = 0;
+  sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
+  sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+  sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+
+  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  {
+    return QSPI_ERROR;
+  }
+
+  /* Configure automatic polling mode to wait for write enabling */
+  sConfig.Match           = 0;
+  sConfig.Mask            = N25Q128A_SR_WREN;
+  sConfig.MatchMode       = QSPI_MATCH_MODE_AND;
+  sConfig.StatusBytesSize = 1;
+  sConfig.Interval        = 0x10;
+  sConfig.AutomaticStop   = QSPI_AUTOMATIC_STOP_ENABLE;
+
+  sCommand.Instruction    = 0x0F;
+  sCommand.DataMode       = QSPI_DATA_1_LINE;
+  sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
+  sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
+  sCommand.Address           = 0xC0;
+
+  if (HAL_QSPI_AutoPolling(&QSPIHandle, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  {
+    return QSPI_ERROR;
+  }
+
+  return QSPI_OK;
+}
+
 /**
   * @brief  This function read the SR of the memory and wait the EOP.
   * @param  hqspi: QSPI handle
@@ -1081,6 +1133,57 @@ uint8_t BSP_QSPI_ProgramExecute(uint32_t addr)
 	}
 
 	if (Status & (1 << 3))
+	{
+		return QSPI_ERROR;
+	}
+
+  return QSPI_OK;
+}
+
+
+
+uint8_t BSP_QSPI_EraseBlock(uint32_t addr)
+{
+	QSPI_CommandTypeDef     sCommand;
+	uint8_t Status;
+
+	/* Enable write operations */
+	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+	sCommand.Instruction       = 0xD8;
+	sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
+	sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
+	sCommand.Address           = addr;
+	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+	sCommand.DataMode          = QSPI_DATA_NONE;
+	sCommand.DummyCycles       = 0;
+	sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
+	sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+
+
+	/* Enable write operations */
+	if (QSPI_WriteEnable(&QSPIHandle) != QSPI_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	/* Configure automatic polling mode to wait for end of program */
+	if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	if (BSP_GetFeature(0xC0, &Status) != QSPI_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	if (Status & (1 << 2))
 	{
 		return QSPI_ERROR;
 	}
