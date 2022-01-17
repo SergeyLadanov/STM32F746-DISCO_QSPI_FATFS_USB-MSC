@@ -148,16 +148,16 @@ int main(void)
 
   }
 
-  if (BSP_SetFeature(0xA0, 0))
-  {
-	  printf("Failed getting feature\n\r");
-
-  }
-  else
-  {
-	  printf("Success getting feature\n\r");
-	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
-  }
+//  if (BSP_SetFeature(0xA0, 0))
+//  {
+//	  printf("Failed getting feature\n\r");
+//
+//  }
+//  else
+//  {
+//	  printf("Success getting feature\n\r");
+//	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
+//  }
 
   if (BSP_GetFeature(0xA0, (uint8_t *) &ReadBuffer[0]))
   {
@@ -170,37 +170,37 @@ int main(void)
 	  printf("Feature result is: %x\r\n", ReadBuffer[0]);
   }
 
-  if (BSP_QSPI_EraseBlock(0))
-  {
-	  printf("Failed erasing block\r\n");
-  }
-  else
-  {
-	  printf("Success erasing block\r\n");
-  }
+//  if (BSP_QSPI_EraseBlock(0))
+//  {
+//	  printf("Failed erasing block\r\n");
+//  }
+//  else
+//  {
+//	  printf("Success erasing block\r\n");
+//  }
+//
+//
+//
+//  if (BSP_WriteToPage((uint8_t *) buffer, 0, 2048))
+//  {
+//	  printf("Failed to write data in buf\r\n");
+//  }
+//  else
+//  {
+//	  printf("Success writing data in buf\r\n");
+//	  HAL_Delay(100);
+//	  if (BSP_QSPI_ProgramExecute(0))
+//	  {
+//		  printf("Failed programming memory\r\n");
+//	  }
+//	  else
+//	  {
+//		  printf("Success programming memory\r\n");
+//	  }
+//
+//  }
 
-
-
-  if (BSP_WriteToPage((uint8_t *) buffer, 0, 2048))
-  {
-	  printf("Failed to write data in buf\r\n");
-  }
-  else
-  {
-	  printf("Success writing data in buf\r\n");
-	  HAL_Delay(100);
-	  if (BSP_QSPI_ProgramExecute(0))
-	  {
-		  printf("Failed programming memory\r\n");
-	  }
-	  else
-	  {
-		  printf("Success programming memory\r\n");
-	  }
-
-  }
-
-  if (BSP_PageRead(1))
+  if (BSP_PageRead(0))
   {
 	  printf("Failed page read\n\r");
   }
@@ -211,7 +211,7 @@ int main(void)
 
 
 
-  if (BSP_ReadFromPage((uint8_t *) ReadBuffer, 0, sizeof(ReadBuffer)))
+  if (BSP_ReadFromPage((uint8_t *) ReadBuffer, 2048, sizeof(ReadBuffer)))
   {
 	  printf("Failed buffer read\n\r");
   }
