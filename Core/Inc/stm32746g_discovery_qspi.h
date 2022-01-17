@@ -111,7 +111,7 @@ uint8_t BSP_QSPI_ResumeErase (void);
 
 
 
-
+//TC58CVG1S3HRAIJ
 
 uint8_t BSP_GetFeature(uint8_t address, uint8_t *pData);
 uint8_t BSP_SetFeature(uint8_t address, uint8_t Data);
