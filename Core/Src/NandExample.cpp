@@ -11,16 +11,27 @@
 
 int NandExample::SectorIsBad(dhara_block_t bno)
 {
-	if (bno >= GetNumBlocks()) {
+	if (bno >= GetNumBlocks())
+	{
 		return -1;
 	}
 
 	uint8_t Probe = 0xFF;
 	uint32_t row = bno << log2_ppb;
+	int8_t status = -1;
 
-	if (BSP_QSPI_ReadPage(row))
+	for (uint8_t i = 0; i < 3; i++)
 	{
-		//printf("Sector is bad!\r\n");
+		if (!BSP_QSPI_ReadPage(row))
+		{
+			//printf("Sector is bad!\r\n");
+			status = 0;
+			break;
+		}
+	}
+
+	if (status)
+	{
 		return true;
 	}
 
@@ -92,6 +103,8 @@ int NandExample::BlockIsFree(dhara_page_t p)
 {
 	uint32_t bno = p >> log2_ppb;
 
+	int8_t status = -1;
+
 
 	if ((bno < 0) || (bno >= GetNumBlocks()))
 	{
@@ -105,7 +118,17 @@ int NandExample::BlockIsFree(dhara_page_t p)
 	int result = true;
 
 
-	if (BSP_QSPI_ReadPage(p))
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		if (!BSP_QSPI_ReadPage(p))
+		{
+			//printf("Sector is bad!\r\n");
+			status = 0;
+			break;
+		}
+	}
+
+	if (status)
 	{
 		result = false;
 	}
@@ -147,6 +170,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *data, dhara_error_t *err)
 {
 	uint32_t bno = p >> log2_ppb;
+	int8_t status = -1;
 	//uint32_t addr = (p << log2_page_size);
 
 	if ((bno < 0) || (bno >= GetNumBlocks()))
@@ -159,7 +183,18 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 		return -1;
 	}
 
-	if (BSP_QSPI_ReadPage(p))
+
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		if (!BSP_QSPI_ReadPage(p))
+		{
+			//printf("Sector is bad!\r\n");
+			status = 0;
+			break;
+		}
+	}
+
+	if (status)
 	{
 		return -1;
 	}

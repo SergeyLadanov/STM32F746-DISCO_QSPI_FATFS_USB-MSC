@@ -100,8 +100,6 @@ typedef struct {
   */
 uint8_t BSP_QSPI_Init        (void);
 uint8_t BSP_QSPI_DeInit      (void);
-uint8_t BSP_QSPI_Write       (uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
-uint8_t BSP_QSPI_GetStatus   (void);
 uint8_t BSP_QSPI_GetInfo     (QSPI_Info* pInfo);
 
 uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData);

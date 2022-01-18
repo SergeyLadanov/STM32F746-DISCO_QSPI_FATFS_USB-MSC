@@ -173,144 +173,6 @@ uint8_t BSP_QSPI_DeInit(void)
 
 
 /**
-  * @brief  Writes an amount of data to the QSPI memory.
-  * @param  pData: Pointer to data to be written
-  * @param  WriteAddr: Write start address
-  * @param  Size: Size of data to write    
-  * @retval QSPI memory status
-  */
-uint8_t BSP_QSPI_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
-{
-//  QSPI_CommandTypeDef sCommand;
-//  uint32_t end_addr, current_size, current_addr;
-//
-//  /* Calculation of the size between the write address and the end of the page */
-//  current_addr = 0;
-//
-//  while (current_addr <= WriteAddr)
-//  {
-//    current_addr += N25Q128A_PAGE_SIZE;
-//  }
-//  current_size = current_addr - WriteAddr;
-//
-//  /* Check if the size of the data is less than the remaining place in the page */
-//  if (current_size > Size)
-//  {
-//    current_size = Size;
-//  }
-//
-//  /* Initialize the adress variables */
-//  current_addr = WriteAddr;
-//  end_addr = WriteAddr + Size;
-//
-//  /* Initialize the program command */
-//  sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-//  sCommand.Instruction       = EXT_QUAD_IN_FAST_PROG_CMD;
-//  sCommand.AddressMode       = QSPI_ADDRESS_4_LINES;
-//  sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
-//  sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-//  sCommand.DataMode          = QSPI_DATA_4_LINES;
-//  sCommand.DummyCycles       = 0;
-//  sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
-//  sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-//  sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-//
-//  /* Perform the write page by page */
-//  do
-//  {
-//    sCommand.Address = current_addr;
-//    sCommand.NbData  = current_size;
-//
-//    /* Enable write operations */
-//    if (QSPI_WriteEnable(&QSPIHandle) != QSPI_OK)
-//    {
-//      return QSPI_ERROR;
-//    }
-//
-//    /* Configure the command */
-//    if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
-//    {
-//      return QSPI_ERROR;
-//    }
-//
-//    /* Transmission of the data */
-//    if (HAL_QSPI_Transmit(&QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
-//    {
-//      return QSPI_ERROR;
-//    }
-//
-//    /* Configure automatic polling mode to wait for end of program */
-//    if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
-//    {
-//      return QSPI_ERROR;
-//    }
-//
-//    /* Update the address and size variables for next page programming */
-//    current_addr += current_size;
-//    pData += current_size;
-//    current_size = ((current_addr + N25Q128A_PAGE_SIZE) > end_addr) ? (end_addr - current_addr) : N25Q128A_PAGE_SIZE;
-//  } while (current_addr < end_addr);
-//
-//  return QSPI_OK;
-}
-
-
-
-
-
-/**
-  * @brief  Reads current status of the QSPI memory.
-  * @retval QSPI memory status
-  */
-uint8_t BSP_QSPI_GetStatus(void)
-{
-  QSPI_CommandTypeDef sCommand;
-  uint8_t reg;
-
-  /* Initialize the read flag status register command */
-  sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  sCommand.Instruction       = READ_FLAG_STATUS_REG_CMD;
-  sCommand.AddressMode       = QSPI_ADDRESS_NONE;
-  sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-  sCommand.DataMode          = QSPI_DATA_1_LINE;
-  sCommand.DummyCycles       = 0;
-  sCommand.NbData            = 1;
-  sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
-  sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-  sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-
-  /* Configure the command */
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
-  {
-    return QSPI_ERROR;
-  }
-
-  /* Reception of the data */
-  if (HAL_QSPI_Receive(&QSPIHandle, &reg, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
-  {
-    return QSPI_ERROR;
-  }
-  
-  /* Check the value of the register */
-  if ((reg & (N25Q128A_FSR_PRERR | N25Q128A_FSR_VPPERR | N25Q128A_FSR_PGERR | N25Q128A_FSR_ERERR)) != 0)
-  {
-    return QSPI_ERROR;
-  }
-  else if ((reg & (N25Q128A_FSR_PGSUS | N25Q128A_FSR_ERSUS)) != 0)
-  {
-    return QSPI_SUSPENDED;
-  }
-  else if ((reg & N25Q128A_FSR_READY) != 0)
-  {
-    return QSPI_OK;
-  }
-  else
-  {
-    return QSPI_BUSY;
-  }
-}
-
-/**
   * @brief  Return the configuration of the QSPI memory.
   * @param  pInfo: pointer on the configuration structure  
   * @retval QSPI memory status
@@ -468,7 +330,7 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
 
   /* Enable write operations */
   sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  sCommand.Instruction       = WRITE_ENABLE_CMD;
+  sCommand.Instruction       = TC58CVG1_WRITE_ENABLE_CMD;
   sCommand.AddressMode       = QSPI_ADDRESS_NONE;
   sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   sCommand.DataMode          = QSPI_DATA_NONE;
@@ -483,8 +345,8 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
   }
   
   /* Configure automatic polling mode to wait for write enabling */  
-  sConfig.Match           = N25Q128A_SR_WREN;
-  sConfig.Mask            = N25Q128A_SR_WREN;
+  sConfig.Match           = TC58CVG1_FT_C0_WEL_BIT;
+  sConfig.Mask            = TC58CVG1_FT_C0_WEL_BIT;
   sConfig.MatchMode       = QSPI_MATCH_MODE_AND;
   sConfig.StatusBytesSize = 1;
   sConfig.Interval        = 0x10;
@@ -494,7 +356,7 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
   sCommand.DataMode       = QSPI_DATA_1_LINE;
   sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
   sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
-  sCommand.Address           = 0xC0;
+  sCommand.Address           = TC58CVG1_FT_C0_ADR;
 
   if (HAL_QSPI_AutoPolling(&QSPIHandle, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
@@ -520,7 +382,7 @@ static uint8_t QSPI_WriteDisable(QSPI_HandleTypeDef *hqspi)
 
   /* Enable write operations */
   sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  sCommand.Instruction       = WRITE_DISABLE_CMD;
+  sCommand.Instruction       = TC58CVG1_WRITE_DISABLE_CMD;
   sCommand.AddressMode       = QSPI_ADDRESS_NONE;
   sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   sCommand.DataMode          = QSPI_DATA_NONE;
@@ -536,7 +398,7 @@ static uint8_t QSPI_WriteDisable(QSPI_HandleTypeDef *hqspi)
 
   /* Configure automatic polling mode to wait for write enabling */
   sConfig.Match           = 0;
-  sConfig.Mask            = N25Q128A_SR_WREN;
+  sConfig.Mask            = TC58CVG1_FT_C0_WEL_BIT;
   sConfig.MatchMode       = QSPI_MATCH_MODE_AND;
   sConfig.StatusBytesSize = 1;
   sConfig.Interval        = 0x10;
@@ -546,7 +408,7 @@ static uint8_t QSPI_WriteDisable(QSPI_HandleTypeDef *hqspi)
   sCommand.DataMode       = QSPI_DATA_1_LINE;
   sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
   sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
-  sCommand.Address           = 0xC0;
+  sCommand.Address           = TC58CVG1_FT_C0_ADR;
 
   if (HAL_QSPI_AutoPolling(&QSPIHandle, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
@@ -572,7 +434,7 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
   sCommand.Instruction       = TC58CVG1_GET_FEATURES_CMD;
   sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
   sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
-  sCommand.Address           = 0xC0;
+  sCommand.Address           = TC58CVG1_FT_C0_ADR;
   sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
   sCommand.DataMode          = QSPI_DATA_1_LINE;
   sCommand.DummyCycles       = 0;
@@ -582,7 +444,7 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
 
 
   sConfig.Match           = 0;
-  sConfig.Mask            = (1 << 0);
+  sConfig.Mask            = TC58CVG1_FT_C0_OIP_BIT;
   sConfig.MatchMode       = QSPI_MATCH_MODE_AND;
   sConfig.StatusBytesSize = 1;
   sConfig.Interval        = 0x10;
@@ -607,7 +469,7 @@ uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData)
 
 	/* Initialize the read command */
 	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	sCommand.Instruction       = 0x0F;
+	sCommand.Instruction       = TC58CVG1_GET_FEATURES_CMD;
 	sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
 	sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
 	sCommand.Address           = address;
@@ -703,12 +565,12 @@ uint8_t BSP_QSPI_ReadPage(uint32_t RowAddr)
   }
 
 
-  if (BSP_QSPI_GetFeature(0xC0, &Status) != QSPI_OK)
+  if (BSP_QSPI_GetFeature(TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
   {
 	  return QSPI_ERROR;
   }
 
-  if (Status & (1 << 5))
+  if (Status & TC58CVG1_FT_C0_ECCS1_BIT)
   {
 	  return QSPI_ERROR;
   }
@@ -812,6 +674,13 @@ uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr)
 	sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
 	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
+
+	/* Enable write operations */
+	if (QSPI_WriteEnable(&QSPIHandle) != QSPI_OK)
+	{
+		return QSPI_ERROR;
+	}
+
 	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
@@ -823,15 +692,17 @@ uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr)
 		return QSPI_ERROR;
 	}
 
-	if (BSP_QSPI_GetFeature(0xC0, &Status) != QSPI_OK)
+	if (BSP_QSPI_GetFeature(TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
 
-	if (Status & (1 << 3))
+	if (Status & TC58CVG1_FT_C0_PRG_F_BIT)
 	{
 		return QSPI_ERROR;
 	}
+
+	QSPI_WriteDisable(&QSPIHandle);
 
   return QSPI_OK;
 }
@@ -874,15 +745,17 @@ uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress)
 		return QSPI_ERROR;
 	}
 
-	if (BSP_QSPI_GetFeature(0xC0, &Status) != QSPI_OK)
+	if (BSP_QSPI_GetFeature(TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
 
-	if (Status & (1 << 2))
+	if (Status & TC58CVG1_FT_C0_ERS_F_BIT)
 	{
 		return QSPI_ERROR;
 	}
+
+	QSPI_WriteDisable(&QSPIHandle);
 
   return QSPI_OK;
 }
@@ -908,11 +781,6 @@ uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 	sCommand.Address = ColAddr;
 	sCommand.NbData  = Size;
 
-	/* Enable write operations */
-	if (QSPI_WriteEnable(&QSPIHandle) != QSPI_OK)
-	{
-		return QSPI_ERROR;
-	}
 
 	/* Configure the command */
 	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
@@ -935,17 +803,17 @@ uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 
 uint8_t BSP_QSPI_UnlockAllBlocks(void)
 {
-	return BSP_QSPI_SetFeature(0xA0, 0);
+	return BSP_QSPI_SetFeature(TC58CVG1_FT_A0_ADR, 0);
 }
 
 
 void BSP_QSPI_EraseChip(void)
 {
 	uint32_t offset = 0;
-	for(uint32_t i = 0; i < 2048; i++)
+	for(uint32_t i = 0; i < (TC58CVG1_FLASH_SIZE / TC58CVG1_BLOCK_SIZE); i++)
 	{
 		BSP_QSPI_EraseBlock(offset);
-		offset += 64;
+		offset += (TC58CVG1_BLOCK_SIZE / TC58CVG1_PAGE_SIZE);
 	}
 }
 
