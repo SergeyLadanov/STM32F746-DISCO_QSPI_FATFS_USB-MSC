@@ -17,7 +17,7 @@
    (#) This driver need a specific component driver (N25Q128A) to be included with.
 
    (#) Initialization steps:
-       (++) Initialize the QPSI external memory using the BSP_QSPI_Init() function. This 
+       (++) Initialize the QPSI external memory using the TC58CVG1_QSPI_Init() function. This
             function includes the MSP layer hardware resources initialization and the
             QSPI interface with the external memory.
   
@@ -25,13 +25,13 @@
        (++) QSPI memory can be accessed with read/write operations once it is
             initialized.
             Read/write operation can be performed with AHB access using the functions
-            BSP_QSPI_Read()/BSP_QSPI_Write(). 
-       (++) The function BSP_QSPI_GetInfo() returns the configuration of the QSPI memory. 
+            TC58CVG1_QSPI_Read()/TC58CVG1_QSPI_Write().
+       (++) The function TC58CVG1_QSPI_GetInfo() returns the configuration of the QSPI memory.
             (see the QSPI memory data sheet)
-       (++) Perform erase block operation using the function BSP_QSPI_Erase_Block() and by
+       (++) Perform erase block operation using the function TC58CVG1_QSPI_Erase_Block() and by
             specifying the block address. You can perform an erase operation of the whole 
-            chip by calling the function BSP_QSPI_Erase_Chip(). 
-       (++) The function BSP_QSPI_GetStatus() returns the current status of the QSPI memory. 
+            chip by calling the function TC58CVG1_QSPI_Erase_Chip().
+       (++) The function TC58CVG1_QSPI_GetStatus() returns the current status of the QSPI memory.
             (see the QSPI memory data sheet)
   @endverbatim
   ******************************************************************************
@@ -65,9 +65,9 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32746g_discovery_qspi.h"
+#include "tc58cvg1_qspi.h"
 
-/** @addtogroup BSP
+/** @addtogroup TC58CVG1
   * @{
   */
 
@@ -84,7 +84,6 @@
 /** @defgroup STM32F746G_DISCOVERY_QSPI_Private_Variables Private Variables
   * @{
   */
-QSPI_HandleTypeDef QSPIHandle;
 
 /**
   * @}
@@ -96,9 +95,6 @@ QSPI_HandleTypeDef QSPIHandle;
 /** @defgroup STM32F746G_DISCOVERY_QSPI_Private_Functions Private Functions
   * @{
   */
-static void    QSPI_MspInit            (void);
-static void    QSPI_MspDeInit          (void);
-static uint8_t QSPI_ResetMemory        (QSPI_HandleTypeDef *hqspi);
 static uint8_t QSPI_WriteEnable        (QSPI_HandleTypeDef *hqspi);
 static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Timeout);
 
@@ -108,68 +104,8 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
 
 /* Exported functions ---------------------------------------------------------*/
 
-/** @addtogroup STM32F746G_DISCOVERY_QSPI_Exported_Functions
-  * @{
-  */
 
-/**
-  * @brief  Initializes the QSPI interface.
-  * @retval QSPI memory status
-  */
-uint8_t BSP_QSPI_Init(void)
-{ 
-  QSPIHandle.Instance = QUADSPI; // Defines the base address of the register structure of the QSPI peripheral
 
-  /* Call the DeInit function to reset the driver */
-  if (HAL_QSPI_DeInit(&QSPIHandle) != HAL_OK)
-  {
-    return QSPI_ERROR;
-  }
-        
-  /* System level initialization */
-  QSPI_MspInit();
-  
-  /* QSPI initialization */
-  QSPIHandle.Init.ClockPrescaler     = 3; /* Clock = Fahb = ? MHz */
-  QSPIHandle.Init.FifoThreshold      = 4;
-  QSPIHandle.Init.SampleShifting     = QSPI_SAMPLE_SHIFTING_NONE;
-  QSPIHandle.Init.FlashSize          = POSITION_VAL(TC58CVG1_FLASH_SIZE) - 1;
-  QSPIHandle.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
-  QSPIHandle.Init.ClockMode          = QSPI_CLOCK_MODE_0;
-
-  if (HAL_QSPI_Init(&QSPIHandle) != HAL_OK)
-  {
-    return QSPI_ERROR;
-  }
-
-  /* QSPI memory reset */
-  if (QSPI_ResetMemory(&QSPIHandle) != QSPI_OK)
-  {
-    return QSPI_NOT_SUPPORTED;
-  }
-  
-  return QSPI_OK;
-}
-
-/**
-  * @brief  De-Initializes the QSPI interface.
-  * @retval QSPI memory status
-  */
-uint8_t BSP_QSPI_DeInit(void)
-{ 
-  QSPIHandle.Instance = QUADSPI;
-  
-  /* Call the DeInit function to reset the driver */
-  if (HAL_QSPI_DeInit(&QSPIHandle) != HAL_OK)
-  {
-    return QSPI_ERROR;
-  }
-
-  /* System level De-initialization */
-  QSPI_MspDeInit();
-
-    return QSPI_OK;
-}
 
 
 /**
@@ -177,7 +113,7 @@ uint8_t BSP_QSPI_DeInit(void)
   * @param  pInfo: pointer on the configuration structure  
   * @retval QSPI memory status
   */
-uint8_t BSP_QSPI_GetInfo(QSPI_Info* pInfo)
+uint8_t TC58CVG1_QSPI_GetInfo(QSPI_Info* pInfo)
 {
   /* Configure the structure with the memory configuration */
   pInfo->FlashSize          = TC58CVG1_FLASH_SIZE;
@@ -191,103 +127,11 @@ uint8_t BSP_QSPI_GetInfo(QSPI_Info* pInfo)
 
 
 /**
-  * @}
-  */
-
-/** @addtogroup STM32F746G_DISCOVERY_QSPI_Private_Functions 
-  * @{
-  */
-
-/**
-  * @brief  Initializes the QSPI MSP.
-  * @retval None
-  */
-static void QSPI_MspInit(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* Enable the QuadSPI memory interface clock */
-  __HAL_RCC_QSPI_CLK_ENABLE();
-
-  /* Reset the QuadSPI memory interface */
-  __HAL_RCC_QSPI_FORCE_RESET();
-  __HAL_RCC_QSPI_RELEASE_RESET();
-
-  /* Enable GPIO clocks */
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-
-  /* QSPI CS GPIO pin configuration  */
-  /* DISCO-STM32F746NG : CS = PB6 */
-  GPIO_InitStruct.Pin       = GPIO_PIN_6;
-  GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull      = GPIO_PULLUP;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF10_QUADSPI;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /* QSPI CLK, D0, D1, D2 and D3 GPIO pins configuration  */
-  /* DISCO-STM32F746NG : CLK = PB2 | D0 = PD11 | D1 = PD12 | D2 = PE2 | D3 = PD13 */
-  
-  GPIO_InitStruct.Pin       = (GPIO_PIN_2); // CLK
-  GPIO_InitStruct.Alternate = GPIO_AF9_QUADSPI;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-  
-  GPIO_InitStruct.Pin       = (GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13); // D0, D1, D3
-  GPIO_InitStruct.Alternate = GPIO_AF9_QUADSPI;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-  
-  GPIO_InitStruct.Pin       = (GPIO_PIN_2); // D2
-  GPIO_InitStruct.Alternate = GPIO_AF9_QUADSPI;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-}
-
-/**
-  * @brief  De-Initializes the QSPI MSP.
-  * @retval None
-  */
-static void QSPI_MspDeInit(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* QSPI CLK, CS, PE10 - PE15 GPIO pins de-configuration  */
-
-   __HAL_RCC_GPIOE_CLK_ENABLE();
-      HAL_GPIO_DeInit(GPIOD, (GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13)); // D0, D1, D3
-      HAL_GPIO_DeInit(GPIOE, GPIO_PIN_2); // D2
-      
-  /* Chip select pin de-configuration */
-  /* Set GPIOE pin 11 in pull up mode (optimum default setting) */
-  GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pin       = GPIO_PIN_6;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct); 
-  
-  /* CLK pin de-configuration */
-  /* Set GPIOE pin 10 in no pull, low state (optimum default setting) */
-  GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP  ;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  GPIO_InitStruct.Pin       = (GPIO_PIN_2);
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
-   
-  /* Reset the QuadSPI memory interface */
-  __HAL_RCC_QSPI_FORCE_RESET();
-  __HAL_RCC_QSPI_RELEASE_RESET();
-
-  /* Disable the QuadSPI memory interface clock */
-  __HAL_RCC_QSPI_CLK_DISABLE();
-}
-
-/**
   * @brief  This function reset the QSPI memory.
   * @param  hqspi: QSPI handle
   * @retval None
   */
-static uint8_t QSPI_ResetMemory(QSPI_HandleTypeDef *hqspi)
+uint8_t TC58CVG1_QSPI_ResetMemory(QSPI_HandleTypeDef *hqspi)
 {
   QSPI_CommandTypeDef sCommand;
 
@@ -303,13 +147,13 @@ static uint8_t QSPI_ResetMemory(QSPI_HandleTypeDef *hqspi)
   sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
   /* Send the command */
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
 
   /* Configure automatic polling mode to wait the memory is ready */  
-  if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
+  if (QSPI_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
   {
     return QSPI_ERROR;
   }
@@ -339,7 +183,7 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
   sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
@@ -358,7 +202,7 @@ static uint8_t QSPI_WriteEnable(QSPI_HandleTypeDef *hqspi)
   sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
   sCommand.Address           = TC58CVG1_FT_C0_ADR;
 
-  if (HAL_QSPI_AutoPolling(&QSPIHandle, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_AutoPolling(hqspi, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
@@ -391,7 +235,7 @@ static uint8_t QSPI_WriteDisable(QSPI_HandleTypeDef *hqspi)
   sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
   sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
@@ -410,7 +254,7 @@ static uint8_t QSPI_WriteDisable(QSPI_HandleTypeDef *hqspi)
   sCommand.AddressSize       = QSPI_ADDRESS_8_BITS;
   sCommand.Address           = TC58CVG1_FT_C0_ADR;
 
-  if (HAL_QSPI_AutoPolling(&QSPIHandle, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_AutoPolling(hqspi, &sCommand, &sConfig, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
@@ -450,7 +294,7 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
   sConfig.Interval        = 0x10;
   sConfig.AutomaticStop   = QSPI_AUTOMATIC_STOP_ENABLE;
 
-  if (HAL_QSPI_AutoPolling(&QSPIHandle, &sCommand, &sConfig, Timeout) != HAL_OK)
+  if (HAL_QSPI_AutoPolling(hqspi, &sCommand, &sConfig, Timeout) != HAL_OK)
   {
     return QSPI_ERROR;
   }
@@ -463,7 +307,7 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
 
 
 
-uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData)
+uint8_t TC58CVG1_QSPI_GetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uint8_t *pData)
 {
 	QSPI_CommandTypeDef sCommand;
 
@@ -482,13 +326,13 @@ uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData)
 	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
 	/* Configure the command */
-	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
 
 	/* Reception of the data */
-	if (HAL_QSPI_Receive(&QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Receive(hqspi, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
@@ -497,7 +341,7 @@ uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData)
 }
 
 
-uint8_t BSP_QSPI_SetFeature(uint8_t address, uint8_t Data)
+uint8_t TC58CVG1_QSPI_SetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uint8_t Data)
 {
 	QSPI_CommandTypeDef sCommand;
 
@@ -516,13 +360,13 @@ uint8_t BSP_QSPI_SetFeature(uint8_t address, uint8_t Data)
 	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
 	/* Configure the command */
-	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
 
 	/* Reception of the data */
-	if (HAL_QSPI_Transmit(&QSPIHandle, &Data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Transmit(hqspi, &Data, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
@@ -533,7 +377,7 @@ uint8_t BSP_QSPI_SetFeature(uint8_t address, uint8_t Data)
 
 
 
-uint8_t BSP_QSPI_ReadPage(uint32_t RowAddr)
+uint8_t TC58CVG1_QSPI_ReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr)
 {
   QSPI_CommandTypeDef sCommand;
   uint8_t Status;
@@ -553,19 +397,19 @@ uint8_t BSP_QSPI_ReadPage(uint32_t RowAddr)
   sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
   /* Configure the command */
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
 
 
-  if (QSPI_AutoPollingMemReady(&QSPIHandle, TC58CVG1_READ_PAGE_MAX_TIME) != QSPI_OK)
+  if (QSPI_AutoPollingMemReady(hqspi, TC58CVG1_READ_PAGE_MAX_TIME) != QSPI_OK)
   {
 	  return QSPI_ERROR;
   }
 
 
-  if (BSP_QSPI_GetFeature(TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
+  if (TC58CVG1_QSPI_GetFeature(hqspi, TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
   {
 	  return QSPI_ERROR;
   }
@@ -583,7 +427,7 @@ uint8_t BSP_QSPI_ReadPage(uint32_t RowAddr)
 
 
 
-uint8_t BSP_QSPI_CheckReadPage(uint32_t RowAddr)
+uint8_t TC58CVG1_QSPI_CheckReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr)
 {
   QSPI_CommandTypeDef sCommand;
 
@@ -602,13 +446,13 @@ uint8_t BSP_QSPI_CheckReadPage(uint32_t RowAddr)
   sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
   /* Configure the command */
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
 
 
-  if (QSPI_AutoPollingMemReady(&QSPIHandle, TC58CVG1_READ_PAGE_MAX_TIME) != QSPI_OK)
+  if (QSPI_AutoPollingMemReady(hqspi, TC58CVG1_READ_PAGE_MAX_TIME) != QSPI_OK)
   {
 	  return QSPI_ERROR;
   }
@@ -620,7 +464,7 @@ uint8_t BSP_QSPI_CheckReadPage(uint32_t RowAddr)
 
 
 
-uint8_t BSP_QSPI_ReadFromBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
+uint8_t TC58CVG1_QSPI_ReadFromBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 {
   QSPI_CommandTypeDef sCommand;
 
@@ -640,13 +484,13 @@ uint8_t BSP_QSPI_ReadFromBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
   sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
   /* Configure the command */
-  if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
 
   /* Reception of the data */
-  if (HAL_QSPI_Receive(&QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+  if (HAL_QSPI_Receive(hqspi, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
     return QSPI_ERROR;
   }
@@ -656,7 +500,7 @@ uint8_t BSP_QSPI_ReadFromBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 
 
 
-uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr)
+uint8_t TC58CVG1_QSPI_ProgramExecute(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr)
 {
 	QSPI_CommandTypeDef     sCommand;
 	uint8_t Status;
@@ -676,23 +520,23 @@ uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr)
 
 
 	/* Enable write operations */
-	if (QSPI_WriteEnable(&QSPIHandle) != QSPI_OK)
+	if (QSPI_WriteEnable(hqspi) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
 
-	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
 
 	/* Configure automatic polling mode to wait for end of program */
-	if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
+	if (QSPI_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
 
-	if (BSP_QSPI_GetFeature(TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
+	if (TC58CVG1_QSPI_GetFeature(hqspi, TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
@@ -702,14 +546,14 @@ uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr)
 		return QSPI_ERROR;
 	}
 
-	QSPI_WriteDisable(&QSPIHandle);
+	QSPI_WriteDisable(hqspi);
 
   return QSPI_OK;
 }
 
 
 
-uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress)
+uint8_t TC58CVG1_QSPI_EraseBlock(QSPI_HandleTypeDef *hqspi, uint32_t BlockAddress)
 {
 	QSPI_CommandTypeDef     sCommand;
 	uint8_t Status;
@@ -729,23 +573,23 @@ uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress)
 
 
 	/* Enable write operations */
-	if (QSPI_WriteEnable(&QSPIHandle) != QSPI_OK)
+	if (QSPI_WriteEnable(hqspi) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
 
-	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
 
 	/* Configure automatic polling mode to wait for end of program */
-	if (QSPI_AutoPollingMemReady(&QSPIHandle, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
+	if (QSPI_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
 
-	if (BSP_QSPI_GetFeature(TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
+	if (TC58CVG1_QSPI_GetFeature(hqspi, TC58CVG1_FT_C0_ADR, &Status) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
@@ -755,13 +599,13 @@ uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress)
 		return QSPI_ERROR;
 	}
 
-	QSPI_WriteDisable(&QSPIHandle);
+	QSPI_WriteDisable(hqspi);
 
   return QSPI_OK;
 }
 
 
-uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
+uint8_t TC58CVG1_QSPI_WriteToBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 {
 	QSPI_CommandTypeDef sCommand;
 
@@ -783,13 +627,13 @@ uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 
 
 	/* Configure the command */
-	if (HAL_QSPI_Command(&QSPIHandle, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
 
 	/* Transmission of the data */
-	if (HAL_QSPI_Transmit(&QSPIHandle, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Transmit(hqspi, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
 		return QSPI_ERROR;
 	}
@@ -801,18 +645,18 @@ uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 }
 
 
-uint8_t BSP_QSPI_UnlockAllBlocks(void)
+uint8_t TC58CVG1_QSPI_UnlockAllBlocks(QSPI_HandleTypeDef *hqspi)
 {
-	return BSP_QSPI_SetFeature(TC58CVG1_FT_A0_ADR, 0);
+	return TC58CVG1_QSPI_SetFeature(hqspi, TC58CVG1_FT_A0_ADR, 0);
 }
 
 
-void BSP_QSPI_EraseChip(void)
+void TC58CVG1_QSPI_EraseChip(QSPI_HandleTypeDef *hqspi)
 {
 	uint32_t offset = 0;
 	for(uint32_t i = 0; i < (TC58CVG1_FLASH_SIZE / TC58CVG1_BLOCK_SIZE); i++)
 	{
-		BSP_QSPI_EraseBlock(offset);
+		TC58CVG1_QSPI_EraseBlock(hqspi, offset);
 		offset += (TC58CVG1_BLOCK_SIZE / TC58CVG1_PAGE_SIZE);
 	}
 }

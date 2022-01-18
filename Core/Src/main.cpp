@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stm32746g_discovery_qspi.h"
+#include "tc58cvg1_qspi.h"
 #include <stdio.h>
 #include "DharaFTL.hpp"
 #include "NandExample.hpp"
@@ -329,7 +329,7 @@ static void Dhara_Init(void)
 	static uint8_t page_buf[LOG_PAGE_SIZE];
 
 
-	if (BSP_QSPI_UnlockAllBlocks())
+	if (TC58CVG1_QSPI_UnlockAllBlocks(&hqspi))
 	{
 		printf("Failed to unlock blocks\n\r");
 

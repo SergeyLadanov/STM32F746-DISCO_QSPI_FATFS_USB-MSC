@@ -48,7 +48,7 @@
 #include "stm32f7xx_hal.h"
 #include "tc58cvg1.h"
 
-/** @addtogroup BSP
+/** @addtogroup TC58CVG1
   * @{
   */
 
@@ -98,20 +98,21 @@ typedef struct {
 /** @defgroup STM32F746G_DISCOVERY_QSPI_Exported_Functions Exported Functions
   * @{
   */
-uint8_t BSP_QSPI_Init        (void);
-uint8_t BSP_QSPI_DeInit      (void);
-uint8_t BSP_QSPI_GetInfo     (QSPI_Info* pInfo);
+uint8_t TC58CVG1_QSPI_Init        (QSPI_HandleTypeDef *hqspi);
+uint8_t TC58CVG1_QSPI_DeInit      (QSPI_HandleTypeDef *hqspi);
+uint8_t TC58CVG1_QSPI_GetInfo     (QSPI_Info* pInfo);
 
-uint8_t BSP_QSPI_GetFeature(uint8_t address, uint8_t *pData);
-uint8_t BSP_QSPI_SetFeature(uint8_t address, uint8_t Data);
-uint8_t BSP_QSPI_ReadPage(uint32_t RowAddr);
-uint8_t BSP_QSPI_CheckReadPage(uint32_t RowAddr);
-uint8_t BSP_QSPI_ReadFromBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size);
-uint8_t BSP_QSPI_WriteToBuf(uint8_t* pData, uint32_t ColAddr, uint32_t Size);
-uint8_t BSP_QSPI_ProgramExecute(uint32_t RowAddr);
-uint8_t BSP_QSPI_EraseBlock(uint32_t BlockAddress);
-uint8_t BSP_QSPI_UnlockAllBlocks(void);
-void BSP_QSPI_EraseChip(void);
+uint8_t TC58CVG1_QSPI_GetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uint8_t *pData);
+uint8_t TC58CVG1_QSPI_SetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uint8_t Data);
+uint8_t TC58CVG1_QSPI_ReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr);
+uint8_t TC58CVG1_QSPI_CheckReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr);
+uint8_t TC58CVG1_QSPI_ReadFromBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size);
+uint8_t TC58CVG1_QSPI_WriteToBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size);
+uint8_t TC58CVG1_QSPI_ProgramExecute(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr);
+uint8_t TC58CVG1_QSPI_EraseBlock(QSPI_HandleTypeDef *hqspi, uint32_t BlockAddress);
+uint8_t TC58CVG1_QSPI_UnlockAllBlocks(QSPI_HandleTypeDef *hqspi);
+uint8_t TC58CVG1_QSPI_ResetMemory(QSPI_HandleTypeDef *hqspi);
+void TC58CVG1_QSPI_EraseChip(QSPI_HandleTypeDef *hqspi);
 
 
 /**

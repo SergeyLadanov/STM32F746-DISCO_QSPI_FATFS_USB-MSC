@@ -6,7 +6,7 @@
  */
 
 #include "NandExample.hpp"
-#include "stm32746g_discovery_qspi.h"
+#include "tc58cvg1_qspi.h"
 #include <cstdio>
 #include <cstring>
 
@@ -20,12 +20,12 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 	uint8_t Probe = 0xFF;
 	uint32_t row = bno << log2_ppb;
 
-	if (BSP_QSPI_CheckReadPage(row))
+	if (TC58CVG1_QSPI_CheckReadPage(QSPI_Ref, row))
 	{
 		return true;
 	}
 
-	if (BSP_QSPI_ReadFromBuf(&Probe, 2049, 1))
+	if (TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, &Probe, 2049, 1))
 	{
 		//printf("Sector is bad!\r\n");
 		return true;
@@ -62,7 +62,7 @@ int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 		return -1;
 	}
 	//printf("Erasing page: %d!\r\n", (int) (row));
-	return BSP_QSPI_EraseBlock(row);
+	return TC58CVG1_QSPI_EraseBlock(QSPI_Ref, row);
 }
 
 
@@ -76,7 +76,7 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 	}
 
 
-	if (BSP_QSPI_WriteToBuf((uint8_t *) data, 0, GetPageSize()))
+	if (TC58CVG1_QSPI_WriteToBuf(QSPI_Ref, (uint8_t *) data, 0, GetPageSize()))
 	{
 		return -1;
 	}
@@ -84,7 +84,7 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 	//printf("Write adr: %d\r\n", (int) p);
 
 
-	return BSP_QSPI_ProgramExecute(p);
+	return TC58CVG1_QSPI_ProgramExecute(QSPI_Ref, p);
 }
 
 
@@ -107,7 +107,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 	for (uint8_t i = 3; i > 0; i--)
 	{
-		if (BSP_QSPI_ReadPage(p))
+		if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, p))
 		{
 			//printf("Sector is bad!\r\n");
 			if (!i)
@@ -123,7 +123,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 
 
-	if (BSP_QSPI_ReadFromBuf((uint8_t *) buf, 0, GetPageSize()))
+	if (TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, (uint8_t *) buf, 0, GetPageSize()))
 	{
 		result = false;
 	}
@@ -172,7 +172,7 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 
 
 
-	if (BSP_QSPI_ReadPage(p))
+	if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, p))
 	{
 		//printf("Sector is bad!\r\n");
 		return -1;
@@ -182,7 +182,7 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 	//printf("Read adr: %d\r\n", (int) (p));
 
 
-	return BSP_QSPI_ReadFromBuf(data, offset, length);;
+	return TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, data, offset, length);;
 }
 
 
