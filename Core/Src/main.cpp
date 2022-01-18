@@ -120,12 +120,6 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
-
-
-
-
-
-
   Dhara_Init();
 
 
