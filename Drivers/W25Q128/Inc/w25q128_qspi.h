@@ -37,8 +37,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F746G_DISCOVERY_QSPI_H
-#define __STM32F746G_DISCOVERY_QSPI_H
+#ifndef __W25Q128_QSPI_H
+#define __W25Q128_QSPI_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -46,18 +46,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
+#include "w25q128.h"
 
-/** @addtogroup BSP
-  * @{
-  */
 
-/** @addtogroup STM32746G_DISCOVERY
-  * @{
-  */
 
-/** @addtogroup STM32L476G_DISCOVERY_QSPI
-  * @{
-  */
 
 /* Exported constants --------------------------------------------------------*/ 
 /** @defgroup STM32F746G_DISCOVERY_QSPI_Exported_Constants Exported Constants
@@ -95,18 +87,18 @@ typedef struct {
 /** @defgroup STM32F746G_DISCOVERY_QSPI_Exported_Functions Exported Functions
   * @{
   */
-uint8_t BSP_QSPI_Init        (void);
-uint8_t BSP_QSPI_DeInit      (void);
-uint8_t BSP_QSPI_Read        (uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
-uint8_t BSP_QSPI_Write       (uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
-uint8_t BSP_QSPI_Erase_Block (uint32_t BlockAddress);
-uint8_t BSP_QSPI_Erase_Sector(uint32_t Sector);
-uint8_t BSP_QSPI_Erase_Chip  (void);
-uint8_t BSP_QSPI_GetStatus   (void);
-uint8_t BSP_QSPI_GetInfo     (QSPI_Info* pInfo);
-uint8_t BSP_QSPI_EnableMemoryMappedMode(void);
-uint8_t BSP_QSPI_SuspendErase(void);
-uint8_t BSP_QSPI_ResumeErase (void);
+uint8_t W25Q128_QSPI_Init        (QSPI_HandleTypeDef *hqspi);
+uint8_t W25Q128_QSPI_DeInit      (QSPI_HandleTypeDef *hqspi);
+uint8_t W25Q128_QSPI_Read        (QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
+uint8_t W25Q128_QSPI_Write       (QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
+uint8_t W25Q128_QSPI_Erase_Block (QSPI_HandleTypeDef *hqspi, uint32_t BlockAddress);
+uint8_t W25Q128_QSPI_Erase_Sector(QSPI_HandleTypeDef *hqspi, uint32_t Sector);
+uint8_t W25Q128_QSPI_Erase_Chip  (QSPI_HandleTypeDef *hqspi);
+uint8_t W25Q128_QSPI_GetStatus   (QSPI_HandleTypeDef *hqspi);
+uint8_t W25Q128_QSPI_GetInfo     (QSPI_Info* pInfo);
+uint8_t W25Q128_QSPI_EnableMemoryMappedMode(QSPI_HandleTypeDef *hqspi);
+uint8_t W25Q128_QSPI_SuspendErase(QSPI_HandleTypeDef *hqspi);
+uint8_t W25Q128_QSPI_ResumeErase (QSPI_HandleTypeDef *hqspi);
 
 /**
   * @}

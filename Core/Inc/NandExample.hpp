@@ -9,16 +9,16 @@
 #define DHARA_APP_NANDEXAMPLE_HPP_
 
 #include "DharaFTL.hpp"
-#include "QSPI_DISCO_F746NG.h"
+#include "main.h"
 
 class NandExample : public DharaNandDriver
 {
 private:
-	QSPI_DISCO_F746NG *Flash = nullptr;
+	QSPI_HandleTypeDef *QSPI_Ref = nullptr;
 public:
 
-    NandExample(uint8_t Log2PageSize, uint8_t Log2Ppb, unsigned int NumBlocks, QSPI_DISCO_F746NG *hmem)
-        : DharaNandDriver(Log2PageSize, Log2Ppb, NumBlocks), Flash(hmem)
+    NandExample(uint8_t Log2PageSize, uint8_t Log2Ppb, unsigned int NumBlocks, QSPI_HandleTypeDef *hqspi)
+        : DharaNandDriver(Log2PageSize, Log2Ppb, NumBlocks), QSPI_Ref(hqspi)
     {
 
     }

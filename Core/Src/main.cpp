@@ -26,7 +26,6 @@
 /* USER CODE BEGIN Includes */
 #include "stm32746g_discovery_qspi.h"
 #include <stdio.h>
-#include "QSPI_DISCO_F746NG.h"
 #include "DharaFTL.hpp"
 #include "NandExample.hpp"
 
@@ -83,7 +82,6 @@ char ReadBuffer[128];
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static QSPI_DISCO_F746NG qspi;
 static FRESULT Status;
 static UINT control;
 DharaFTL Map;
@@ -122,35 +120,6 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
-
-
-
-  uint8_t init_return = qspi.Init();
-
-#ifdef DEBUG
-  printf("Init return value: %d\n\r", init_return);
-#endif // DEBUG
-
-
-
-  if (init_return != QSPI_OK)
-  {
-#ifdef DEBUG
-	  printf("QSPI Initialization FAILED\n\r");
-#endif // DEBUG
-
-  }
-  else
-  {
-#ifdef DEBUG
-	  printf("QSPI Initialization PASSED\n\r");
-#endif // DEBUG
-
-  }
-
-  //qspi.Erase_Chip();
-
-
   Dhara_Init();
 
   	for (uint8_t i = 0; i < 3; i++)
@@ -349,7 +318,7 @@ static void Dhara_Init(void)
 	constexpr uint32_t PHYSICAL_BLOCK_SIZE = 4096;
 	constexpr uint32_t PAGES_PER_BLOCK = PHYSICAL_BLOCK_SIZE / LOG_PAGE_SIZE;
 
-	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 4096, &qspi);
+	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 4096, &hqspi);
 	static uint8_t page_buf[LOG_PAGE_SIZE];
 
 	printf("Map init\n");

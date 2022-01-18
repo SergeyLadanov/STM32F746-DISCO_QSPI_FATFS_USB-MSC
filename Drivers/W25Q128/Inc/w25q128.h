@@ -36,8 +36,8 @@
   */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __N25Q128A_H
-#define __N25Q128A_H
+#ifndef __W25Q128_H
+#define __W25Q128_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -72,17 +72,17 @@
 /** 
   * @brief  N25Q128A Configuration  
   */  
-#define N25Q128A_FLASH_SIZE                  0x1000000 /* 128 MBits => 16MBytes */
-#define N25Q128A_SECTOR_SIZE                 0x10000   /* 256 sectors of 64KBytes */
-#define N25Q128A_SUBSECTOR_SIZE              0x1000    /* 4096 subsectors of 4kBytes */
-#define N25Q128A_PAGE_SIZE                   0x100     /* 65536 pages of 256 bytes */
+#define W25Q128A_FLASH_SIZE                  0x1000000 /* 128 MBits => 16MBytes */
+#define W25Q128A_SECTOR_SIZE                 0x10000   /* 256 sectors of 64KBytes */
+#define W25Q128A_SUBSECTOR_SIZE              0x1000    /* 4096 subsectors of 4kBytes */
+#define W25Q128A_PAGE_SIZE                   0x100     /* 65536 pages of 256 bytes */
 
-#define N25Q128A_DUMMY_CYCLES_READ           8
-#define N25Q128A_DUMMY_CYCLES_READ_QUAD      10
+#define W25Q128A_DUMMY_CYCLES_READ           8
+#define W25Q128A_DUMMY_CYCLES_READ_QUAD      10
 
-#define N25Q128A_BULK_ERASE_MAX_TIME         250000
-#define N25Q128A_SECTOR_ERASE_MAX_TIME       3000
-#define N25Q128A_SUBSECTOR_ERASE_MAX_TIME    800
+#define W25Q128A_BULK_ERASE_MAX_TIME         250000
+#define W25Q128A_SECTOR_ERASE_MAX_TIME       3000
+#define W25Q128A_SUBSECTOR_ERASE_MAX_TIME    800
 
 /** 
   * @brief  N25Q128A Commands  
@@ -151,41 +151,41 @@
   * @brief  N25Q128A Registers  
   */ 
 /* Status Register */
-#define N25Q128A_SR_WIP                      ((uint8_t)0x01)    /*!< Write in progress */
-#define N25Q128A_SR_WREN                     ((uint8_t)0x02)    /*!< Write enable latch */
-#define N25Q128A_SR_BLOCKPR                  ((uint8_t)0x5C)    /*!< Block protected against program and erase operations */
-#define N25Q128A_SR_PRBOTTOM                 ((uint8_t)0x20)    /*!< Protected memory area defined by BLOCKPR starts from top or bottom */
-#define N25Q128A_SR_SRWREN                   ((uint8_t)0x80)    /*!< Status register write enable/disable */
+#define W25Q128A_SR_WIP                      ((uint8_t)0x01)    /*!< Write in progress */
+#define W25Q128A_SR_WREN                     ((uint8_t)0x02)    /*!< Write enable latch */
+#define W25Q128A_SR_BLOCKPR                  ((uint8_t)0x5C)    /*!< Block protected against program and erase operations */
+#define W25Q128A_SR_PRBOTTOM                 ((uint8_t)0x20)    /*!< Protected memory area defined by BLOCKPR starts from top or bottom */
+#define W25Q128A_SR_SRWREN                   ((uint8_t)0x80)    /*!< Status register write enable/disable */
 
 /* Nonvolatile Configuration Register */
-#define N25Q128A_NVCR_LOCK                   ((uint16_t)0x0001) /*!< Lock nonvolatile configuration register */
-#define N25Q128A_NVCR_DUAL                   ((uint16_t)0x0004) /*!< Dual I/O protocol */
-#define N25Q128A_NVCR_QUAB                   ((uint16_t)0x0008) /*!< Quad I/O protocol */
-#define N25Q128A_NVCR_RH                     ((uint16_t)0x0010) /*!< Reset/hold */
-#define N25Q128A_NVCR_ODS                    ((uint16_t)0x01C0) /*!< Output driver strength */
-#define N25Q128A_NVCR_XIP                    ((uint16_t)0x0E00) /*!< XIP mode at power-on reset */
-#define N25Q128A_NVCR_NB_DUMMY               ((uint16_t)0xF000) /*!< Number of dummy clock cycles */
+#define W25Q128A_NVCR_LOCK                   ((uint16_t)0x0001) /*!< Lock nonvolatile configuration register */
+#define W25Q128A_NVCR_DUAL                   ((uint16_t)0x0004) /*!< Dual I/O protocol */
+#define W25Q128A_NVCR_QUAB                   ((uint16_t)0x0008) /*!< Quad I/O protocol */
+#define W25Q128A_NVCR_RH                     ((uint16_t)0x0010) /*!< Reset/hold */
+#define W25Q128A_NVCR_ODS                    ((uint16_t)0x01C0) /*!< Output driver strength */
+#define W25Q128A_NVCR_XIP                    ((uint16_t)0x0E00) /*!< XIP mode at power-on reset */
+#define W25Q128A_NVCR_NB_DUMMY               ((uint16_t)0xF000) /*!< Number of dummy clock cycles */
 
 /* Volatile Configuration Register */
-#define N25Q128A_VCR_WRAP                    ((uint8_t)0x03)    /*!< Wrap */
-#define N25Q128A_VCR_XIP                     ((uint8_t)0x08)    /*!< XIP */
-#define N25Q128A_VCR_NB_DUMMY                ((uint8_t)0xF0)    /*!< Number of dummy clock cycles */
+#define W25Q128A_VCR_WRAP                    ((uint8_t)0x03)    /*!< Wrap */
+#define W25Q128A_VCR_XIP                     ((uint8_t)0x08)    /*!< XIP */
+#define W25Q128A_VCR_NB_DUMMY                ((uint8_t)0xF0)    /*!< Number of dummy clock cycles */
 
 /* Enhanced Volatile Configuration Register */
-#define N25Q128A_EVCR_ODS                    ((uint8_t)0x07)    /*!< Output driver strength */
-#define N25Q128A_EVCR_VPPA                   ((uint8_t)0x08)    /*!< Vpp accelerator */
-#define N25Q128A_EVCR_RH                     ((uint8_t)0x10)    /*!< Reset/hold */
-#define N25Q128A_EVCR_DUAL                   ((uint8_t)0x40)    /*!< Dual I/O protocol */
-#define N25Q128A_EVCR_QUAD                   ((uint8_t)0x80)    /*!< Quad I/O protocol */
+#define W25Q128A_EVCR_ODS                    ((uint8_t)0x07)    /*!< Output driver strength */
+#define W25Q128A_EVCR_VPPA                   ((uint8_t)0x08)    /*!< Vpp accelerator */
+#define W25Q128A_EVCR_RH                     ((uint8_t)0x10)    /*!< Reset/hold */
+#define W25Q128A_EVCR_DUAL                   ((uint8_t)0x40)    /*!< Dual I/O protocol */
+#define W25Q128A_EVCR_QUAD                   ((uint8_t)0x80)    /*!< Quad I/O protocol */
 
 /* Flag Status Register */
-#define N25Q128A_FSR_PRERR                   ((uint8_t)0x02)    /*!< Protection error */
-#define N25Q128A_FSR_PGSUS                   ((uint8_t)0x04)    /*!< Program operation suspended */
-#define N25Q128A_FSR_VPPERR                  ((uint8_t)0x08)    /*!< Invalid voltage during program or erase */
-#define N25Q128A_FSR_PGERR                   ((uint8_t)0x10)    /*!< Program error */
-#define N25Q128A_FSR_ERERR                   ((uint8_t)0x20)    /*!< Erase error */
-#define N25Q128A_FSR_ERSUS                   ((uint8_t)0x40)    /*!< Erase operation suspended */
-#define N25Q128A_FSR_READY                   ((uint8_t)0x80)    /*!< Ready or command in progress */
+#define W25Q128A_FSR_PRERR                   ((uint8_t)0x02)    /*!< Protection error */
+#define W25Q128A_FSR_PGSUS                   ((uint8_t)0x04)    /*!< Program operation suspended */
+#define W25Q128A_FSR_VPPERR                  ((uint8_t)0x08)    /*!< Invalid voltage during program or erase */
+#define W25Q128A_FSR_PGERR                   ((uint8_t)0x10)    /*!< Program error */
+#define W25Q128A_FSR_ERERR                   ((uint8_t)0x20)    /*!< Erase error */
+#define W25Q128A_FSR_ERSUS                   ((uint8_t)0x40)    /*!< Erase operation suspended */
+#define W25Q128A_FSR_READY                   ((uint8_t)0x80)    /*!< Ready or command in progress */
 
 /**
   * @}

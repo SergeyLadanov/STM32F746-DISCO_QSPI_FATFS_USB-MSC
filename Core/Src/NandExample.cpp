@@ -8,6 +8,7 @@
 #include "NandExample.hpp"
 #include <cstdio>
 #include <cstring>
+#include "w25q128_qspi.h"
 
 int NandExample::SectorIsBad(dhara_block_t bno)
 {
@@ -37,7 +38,7 @@ int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 		return -1;
 	}
 	//printf("Erasing page: %d!\r\n", (int) addr);
-	return Flash->Erase_Block(addr);
+	return W25Q128_QSPI_Erase_Block(QSPI_Ref, addr);
 }
 
 
@@ -52,7 +53,7 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 	}
 
 	//printf("Write adr: %d\r\n", (int) addr);
-	return Flash->Write((uint8_t *) data, addr, GetPageSize());
+	return W25Q128_QSPI_Write(QSPI_Ref, (uint8_t *) data, addr, GetPageSize());
 }
 
 
@@ -77,7 +78,8 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 	for (int i = 0; i < (1 << log2_ppb); i ++)
 	{
-		if (Flash->Read((uint8_t *) buf, adr + offset, GetPageSize()))
+
+		if (W25Q128_QSPI_Read(QSPI_Ref, (uint8_t *) buf, adr + offset, GetPageSize()))
 		{
 			result = false;
 			break;
@@ -129,7 +131,7 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 
 	//printf("Read adr: %d\r\n", (int) (addr + offset));
 
-	return Flash->Read(data, addr + offset, length);
+	return W25Q128_QSPI_Read(QSPI_Ref, data, addr + offset, length);
 }
 
 
