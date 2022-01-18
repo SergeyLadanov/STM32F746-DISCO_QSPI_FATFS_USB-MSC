@@ -5,12 +5,12 @@
  *      Author: Acer
  */
 
-#include "NandExample.hpp"
+#include "NorExample.hpp"
 #include <cstdio>
 #include <cstring>
 #include "w25q128_qspi.h"
 
-int NandExample::SectorIsBad(dhara_block_t bno)
+int NorExample::SectorIsBad(dhara_block_t bno)
 {
 	if (bno >= GetNumBlocks()) {
 		return -1;
@@ -20,7 +20,7 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 }
 
 
-void NandExample::MarkBadSector(dhara_block_t bno)
+void NorExample::MarkBadSector(dhara_block_t bno)
 {
 	if (bno >= GetNumBlocks())
 	{
@@ -29,7 +29,7 @@ void NandExample::MarkBadSector(dhara_block_t bno)
 }
 
 
-int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
+int NorExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 {
 	uint32_t addr = (bno << GetLog2BlockSize());
 
@@ -42,7 +42,7 @@ int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 }
 
 
-int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
+int NorExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 {
 	uint32_t bno = p >> log2_ppb;
 	uint32_t addr = (p << log2_page_size);
@@ -57,7 +57,7 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 }
 
 
-int NandExample::BlockIsFree(dhara_page_t p)
+int NorExample::BlockIsFree(dhara_page_t p)
 {
 	uint32_t bno = p >> log2_ppb;
 
@@ -113,7 +113,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 }
 
 
-int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *data, dhara_error_t *err)
+int NorExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *data, dhara_error_t *err)
 {
 	uint32_t bno = p >> log2_ppb;
 	uint32_t addr = (p << log2_page_size);
@@ -135,7 +135,7 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 }
 
 
-int NandExample::CopyPage(dhara_page_t src, dhara_page_t dst, dhara_error_t *err)
+int NorExample::CopyPage(dhara_page_t src, dhara_page_t dst, dhara_error_t *err)
 {
     uint8_t *buf = new uint8_t[GetPageSize()];
 

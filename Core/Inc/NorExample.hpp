@@ -5,19 +5,19 @@
  *      Author: Acer
  */
 
-#ifndef DHARA_APP_NANDEXAMPLE_HPP_
-#define DHARA_APP_NANDEXAMPLE_HPP_
+#ifndef DHARA_APP_NOREXAMPLE_HPP_
+#define DHARA_APP_NOREXAMPLE_HPP_
 
 #include "DharaFTL.hpp"
 #include "main.h"
 
-class NandExample : public DharaNandDriver
+class NorExample : public DharaNandDriver
 {
 private:
 	QSPI_HandleTypeDef *QSPI_Ref = nullptr;
 public:
 
-    NandExample(uint8_t Log2PageSize, uint8_t Log2Ppb, unsigned int NumBlocks, QSPI_HandleTypeDef *hqspi)
+	NorExample(uint8_t Log2PageSize, uint8_t Log2Ppb, unsigned int NumBlocks, QSPI_HandleTypeDef *hqspi)
         : DharaNandDriver(Log2PageSize, Log2Ppb, NumBlocks), QSPI_Ref(hqspi)
     {
 

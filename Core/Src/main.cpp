@@ -27,7 +27,7 @@
 #include "stm32746g_discovery_qspi.h"
 #include <stdio.h>
 #include "DharaFTL.hpp"
-#include "NandExample.hpp"
+#include "NorExample.hpp"
 
 /* USER CODE END Includes */
 
@@ -318,12 +318,12 @@ static void Dhara_Init(void)
 	constexpr uint32_t PHYSICAL_BLOCK_SIZE = 4096;
 	constexpr uint32_t PAGES_PER_BLOCK = PHYSICAL_BLOCK_SIZE / LOG_PAGE_SIZE;
 
-	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 4096, &hqspi);
+	static NorExample NorFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 4096, &hqspi);
 	static uint8_t page_buf[LOG_PAGE_SIZE];
 
 	printf("Map init\n");
 
-	if (Map.Init(&NandFtlDriver, page_buf, 4))
+	if (Map.Init(&NorFtlDriver, page_buf, 4))
 	{
 		printf("Map init error\r\n");
 	}
