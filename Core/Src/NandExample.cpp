@@ -6,6 +6,7 @@
  */
 
 #include "NandExample.hpp"
+#include "stm32746g_discovery_qspi.h"
 #include <cstdio>
 #include <cstring>
 

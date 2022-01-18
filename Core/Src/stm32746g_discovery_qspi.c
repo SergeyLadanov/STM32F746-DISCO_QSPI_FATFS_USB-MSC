@@ -589,7 +589,7 @@ uint8_t BSP_QSPI_CheckReadPage(uint32_t RowAddr)
 
   /* Initialize the read command */
   sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-  sCommand.Instruction       = 0x13;
+  sCommand.Instruction       = TC58CVG1_READ_PAGE_CMD;
   sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
   sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
   sCommand.Address           = RowAddr;

@@ -36,7 +36,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include "ff_gen_drv.h"
-#include "QSPI_DISCO_F746NG.h"
 #include "DharaFTL.hpp"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

@@ -23,7 +23,6 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "QSPI_DISCO_F746NG.h"
 #include <cstring>
 #include "DharaFTL.hpp"
 /* USER CODE END INCLUDE */

@@ -26,7 +26,6 @@
 /* USER CODE BEGIN Includes */
 #include "stm32746g_discovery_qspi.h"
 #include <stdio.h>
-#include "QSPI_DISCO_F746NG.h"
 #include "DharaFTL.hpp"
 #include "NandExample.hpp"
 
@@ -83,7 +82,6 @@ char ReadBuffer[128] = {0xAA};
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static QSPI_DISCO_F746NG qspi;
 static FRESULT Status;
 static UINT control;
 DharaFTL Map;
@@ -125,40 +123,7 @@ int main(void)
 
 
 
-  uint8_t init_return = qspi.Init();
 
-#ifdef DEBUG
-  printf("Init return value: %d\n\r", init_return);
-#endif // DEBUG
-
-
-
-  if (init_return != QSPI_OK)
-  {
-#ifdef DEBUG
-	  printf("QSPI Initialization FAILED\n\r");
-#endif // DEBUG
-
-  }
-  else
-  {
-#ifdef DEBUG
-	  printf("QSPI Initialization PASSED\n\r");
-#endif // DEBUG
-
-  }
-
-  if (BSP_QSPI_UnlockAllBlocks())
-  {
-	  printf("Failed to unlock blocks\n\r");
-
-  }
-  else
-  {
-	  printf("Success unlocking blocks\n\r");
-  }
-
-  printf("Finish\r\n");
 
 
   Dhara_Init();
@@ -360,8 +325,19 @@ static void Dhara_Init(void)
 	constexpr uint32_t PHYSICAL_BLOCK_SIZE = 128 * 1024;
 	constexpr uint32_t PAGES_PER_BLOCK = PHYSICAL_BLOCK_SIZE / LOG_PAGE_SIZE;
 
-	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 2048, &qspi);
+	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 2048, &hqspi);
 	static uint8_t page_buf[LOG_PAGE_SIZE];
+
+
+	if (BSP_QSPI_UnlockAllBlocks())
+	{
+		printf("Failed to unlock blocks\n\r");
+
+	}
+	else
+	{
+		printf("Success unlocking blocks\n\r");
+	}
 
 
 	//BSP_QSPI_EraseChip();
