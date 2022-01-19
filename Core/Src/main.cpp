@@ -357,25 +357,7 @@ static void MX_QUADSPI_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN QUADSPI_Init 2 */
-  if (TC58CVG1_QSPI_UnlockAllBlocks(&hqspi))
-  {
-	printf("Failed to unlock blocks\n\r");
 
-  }
-  else
-  {
-	printf("Success unlocking blocks\n\r");
-  }
-
-
-  if (!TC58CVG1_QSPI_HoldDisable(&hqspi))
-  {
-	  printf("Success hold disable!\r\n");
-  }
-  else
-  {
-	  printf("Failed hold disable!\r\n");
-  }
   /* USER CODE END QUADSPI_Init 2 */
 
 }
@@ -406,6 +388,25 @@ static void Dhara_Init(void)
 
 	static NandExample NandFtlDriver(POSITION_VAL(LOG_PAGE_SIZE), POSITION_VAL(PAGES_PER_BLOCK), 2048, &hqspi);
 	static uint8_t page_buf[LOG_PAGE_SIZE];
+
+	if (TC58CVG1_QSPI_UnlockAllBlocks(&hqspi))
+	{
+		printf("Failed to unlock blocks\n\r");
+	}
+	else
+	{
+		printf("Success unlocking blocks\n\r");
+	}
+
+
+	if (!TC58CVG1_QSPI_HoldDisable(&hqspi))
+	{
+		printf("Success hold disable!\r\n");
+	}
+	else
+	{
+		printf("Failed hold disable!\r\n");
+	}
 
 
 	//TC58CVG1_QSPI_EraseChip(&hqspi);

@@ -19,7 +19,7 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 	}
 
 	uint8_t Probe = 0xFF;
-	uint32_t row = bno << (POSITION_VAL(TC58CVG1_PAGE_SIZE));
+	uint32_t row = bno << (POSITION_VAL(TC58CVG1_BLOCK_SIZE / TC58CVG1_PAGE_SIZE));
 
 	if (TC58CVG1_QSPI_CheckReadPage(QSPI_Ref, row))
 	{
@@ -28,18 +28,18 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 
 	if (TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, &Probe, 2049, 1))
 	{
-		printf("Sector is bad!\r\n");
+		//printf("Sector is bad!\r\n");
 		return true;
 	}
 
 
 	if (!Probe)
 	{
-		printf("Sector is bad!\r\n");
+		//printf("Sector is bad!\r\n");
 		return true;
 	}
 
-	printf("Sector is good!\r\n");
+	//printf("Sector is good!\r\n");
 
 	return false;
 }
@@ -57,12 +57,12 @@ void NandExample::MarkBadSector(dhara_block_t bno)
 int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 {
 
-	uint32_t row = bno << (POSITION_VAL(TC58CVG1_PAGE_SIZE));
+	uint32_t row = bno << (POSITION_VAL(TC58CVG1_BLOCK_SIZE / TC58CVG1_PAGE_SIZE));
 	if (bno >= GetNumBlocks())
 	{
 		return -1;
 	}
-	printf("Erasing page: %d!\r\n", (int) (row));
+	//printf("Erasing page: %d!\r\n", (int) (row));
 	return TC58CVG1_QSPI_EraseBlock(QSPI_Ref, row);
 }
 
@@ -90,9 +90,9 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 		return -1;
 	}
 
-	printf("Write row: %lu\r\n", Row);
-	printf("Write page: %lu\r\n", p);
-	printf("Write adr on page: %lu\r\n", offset_on_page );
+//	printf("Write row: %lu\r\n", Row);
+//	printf("Write page: %lu\r\n", p);
+//	printf("Write adr on page: %lu\r\n", offset_on_page );
 
 
 	return TC58CVG1_QSPI_ProgramExecute(QSPI_Ref, Row);
@@ -188,15 +188,14 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 
 	if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, Row))
 	{
-		printf("Error of reading page!\r\n");
+		//printf("Error of reading page!\r\n");
 		return -1;
 	}
 
-	printf("Read row: %lu\r\n", Row);
-	printf("Read page: %lu\r\n", p);
-	//printf("Read adr on page with offset: %lu\r\n", offset_on_page + offset);
-	printf("Read offset: %lu\r\n", (uint32_t) offset);
-	printf("Read adr on page: %lu\r\n", offset_on_page);
+//	printf("Read row: %lu\r\n", Row);
+//	printf("Read page: %lu\r\n", p);
+//	printf("Read offset: %lu\r\n", (uint32_t) offset);
+//	printf("Read adr on page: %lu\r\n", offset_on_page);
 
 
 	return TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, data, offset_on_page + offset, length);
