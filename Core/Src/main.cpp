@@ -38,7 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define USE_WRITE_TEST 0
+#define USE_WRITE_TEST 1
 #define USE_READ_TEST 1
 /* USER CODE END PD */
 
@@ -73,8 +73,8 @@ int __io_putchar(int ch)
 
 }
 
-char buffer[128] = "QSPI test with FAT_FS";
-char ReadBuffer[128] = {0xAA};
+char buffer[512] = "QSPI test with FAT_FS";
+char ReadBuffer[512] = {0xAA};
 
 
 
@@ -120,83 +120,150 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
+
+
+
+//    if (!TC58CVG1_QSPI_EraseBlock(&hqspi, 0))
+//    {
+//  	  printf("Success erase!\r\n");
+//    }
+
+//  if (!TC58CVG1_QSPI_ClearBuffer(&hqspi))
+//  {
+//	  printf("Success clear buffer!\r\n");
+//  }
+//
+//
+//  if (!TC58CVG1_QSPI_ProgramLoadRandom(&hqspi, (uint8_t *) buffer, 0, 512))
+//  {
+//	  printf("Success program load!\r\n");
+//  }
+//
+//  if (!TC58CVG1_QSPI_ProgramExecute(&hqspi, 0))
+//  {
+//	  printf("Success program execute!\r\n");
+//  }
+//
+//
+//  if (!TC58CVG1_QSPI_ReadPage(&hqspi, 0))
+//  {
+//	  printf("Success read page!\r\n");
+//  }
+//
+//
+//
+//  if (!TC58CVG1_QSPI_ReadFromBuf(&hqspi, (uint8_t *)ReadBuffer, 0, sizeof(ReadBuffer)))
+//  {
+//	  printf("Success read buffer!\r\n");
+//  }
+//
+//  printf("Finish!\r\n");
+
+
+
+
   Dhara_Init();
 
-
-  	for (uint8_t i = 0; i < 3; i++)
-  	{
-		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
-		{
-		  printf("Mounted!\r\n");
-
-#if USE_WRITE_TEST != 0
-		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
-		  {
-			  printf("File opened!\r\n");
-			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
-			  {
-				  printf("Write success!\r\n");
-			  }
-			  else
-			  {
-				  printf("Write failed!\r\n");
-			  }
-
-			  if (f_close(&USERFile) == FR_OK)
-			  {
-				  printf("File was closed!\r\n");
-			  }
-			  else
-			  {
-				  printf("File was not closed!\r\n");
-			  }
-		  }
-		  else
-		  {
-			  printf("File was not opened!\r\n");
-		  }
-#endif
+//  for (uint32_t i = 0; i < 256; i++)
+//  {
+//	  if (Map.Write(0, (uint8_t *) buffer))
+//	  {
+//		  printf("Write error!\r\n");
+//	  }
+//	  else
+//	  {
+//		  printf("Write success!\r\n");
+//	  }
+//
+//
+//	  if (Map.Read(0, (uint8_t *) ReadBuffer))
+//	  {
+//		  printf("Read error!\r\n");
+//	  }
+//	  else
+//	  {
+//		  printf("Read success!\r\n");
+//		  printf("Read result: %s\r\n", ReadBuffer);
+//	  }
+//
+//	  HAL_Delay(350);
+//  }
 
 
-#if USE_READ_TEST != 0
-		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
-		  {
-			  printf("File opened!\r\n");
-
-
-			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
-			  {
-				  printf("Read success!\r\n");
-			  }
-			  else
-			  {
-				  printf("Read failed!\r\n");
-			  }
-
-			  if (f_close(&USERFile) == FR_OK)
-			  {
-				  printf("File was closed!\r\n");
-			  }
-			  else
-			  {
-				  printf("File was not closed!\r\n");
-			  }
-		  }
-		  else
-		  {
-			  printf("File was not opened!\r\n");
-		  }
-#endif
-
-		  break;
-		}
-		else
-		{
-		  uint8_t buf[4096];
-		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
-		  printf("Not mounted!\r\n");
-		}
-  	}
+//  	for (uint8_t i = 0; i < 3; i++)
+//  	{
+//		if ((Status = f_mount(&USERFatFS, "0", 1)) == FR_OK)
+//		{
+//		  printf("Mounted!\r\n");
+//
+//#if USE_WRITE_TEST != 0
+//		  if (f_open(&USERFile, "Test.txt", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
+//		  {
+//			  printf("File opened!\r\n");
+//			  if (f_write(&USERFile, buffer, sizeof(buffer), &control) == FR_OK)
+//			  {
+//				  printf("Write success!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("Write failed!\r\n");
+//			  }
+//
+//			  if (f_close(&USERFile) == FR_OK)
+//			  {
+//				  printf("File was closed!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("File was not closed!\r\n");
+//			  }
+//		  }
+//		  else
+//		  {
+//			  printf("File was not opened!\r\n");
+//		  }
+//#endif
+//
+//
+//#if USE_READ_TEST != 0
+//		  if (f_open(&USERFile, "Test.txt", FA_READ) == FR_OK)
+//		  {
+//			  printf("File opened!\r\n");
+//
+//
+//			  if (f_read(&USERFile, ReadBuffer, sizeof(buffer), &control) == FR_OK)
+//			  {
+//				  printf("Read success!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("Read failed!\r\n");
+//			  }
+//
+//			  if (f_close(&USERFile) == FR_OK)
+//			  {
+//				  printf("File was closed!\r\n");
+//			  }
+//			  else
+//			  {
+//				  printf("File was not closed!\r\n");
+//			  }
+//		  }
+//		  else
+//		  {
+//			  printf("File was not opened!\r\n");
+//		  }
+//#endif
+//
+//		  break;
+//		}
+//		else
+//		{
+//		  uint8_t buf[4096];
+//		  Status = f_mkfs("0", 1, 0, buf, sizeof(buf));
+//		  printf("Not mounted!\r\n");
+//		}
+//  	}
 
   /* USER CODE END 2 */
 
@@ -299,6 +366,16 @@ static void MX_QUADSPI_Init(void)
   {
 	printf("Success unlocking blocks\n\r");
   }
+
+
+  if (!TC58CVG1_QSPI_HoldDisable(&hqspi))
+  {
+	  printf("Success hold disable!\r\n");
+  }
+  else
+  {
+	  printf("Failed hold disable!\r\n");
+  }
   /* USER CODE END QUADSPI_Init 2 */
 
 }
@@ -323,7 +400,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void Dhara_Init(void)
 {
-	constexpr uint32_t LOG_PAGE_SIZE = 2048;
+	constexpr uint32_t LOG_PAGE_SIZE = 512;
 	constexpr uint32_t PHYSICAL_BLOCK_SIZE = 128 * 1024;
 	constexpr uint32_t PAGES_PER_BLOCK = PHYSICAL_BLOCK_SIZE / LOG_PAGE_SIZE;
 
@@ -331,7 +408,7 @@ static void Dhara_Init(void)
 	static uint8_t page_buf[LOG_PAGE_SIZE];
 
 
-	//BSP_QSPI_EraseChip();
+	//TC58CVG1_QSPI_EraseChip(&hqspi);
 
 	printf("Map init\n");
 

@@ -605,7 +605,7 @@ uint8_t TC58CVG1_QSPI_EraseBlock(QSPI_HandleTypeDef *hqspi, uint32_t BlockAddres
 }
 
 
-uint8_t TC58CVG1_QSPI_WriteToBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size)
+uint8_t TC58CVG1_QSPI_ProgramLoad(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size)
 {
 	QSPI_CommandTypeDef sCommand;
 
@@ -639,6 +639,102 @@ uint8_t TC58CVG1_QSPI_WriteToBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint
 	}
 
 
+
+
+	return QSPI_OK;
+}
+
+
+uint8_t TC58CVG1_QSPI_ClearBuffer(QSPI_HandleTypeDef *hqspi)
+{
+	uint8_t clear_byte = 0xFF;
+
+	if (TC58CVG1_QSPI_ProgramLoad(hqspi, &clear_byte, 0, 1))
+	{
+		return QSPI_ERROR;
+	}
+
+	return QSPI_OK;
+}
+
+
+uint8_t TC58CVG1_QSPI_HoldDisable(QSPI_HandleTypeDef *hqspi)
+{
+	uint8_t Status = 0;
+
+	/* Disable Hold function */
+	if (TC58CVG1_QSPI_GetFeature(hqspi, TC58CVG1_FT_B0_ADR, &Status) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	Status |= TC58CVG1_FT_B0_HOLD_D_BIT;
+
+
+	if (TC58CVG1_QSPI_SetFeature(hqspi, TC58CVG1_FT_B0_ADR, Status) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	return QSPI_OK;
+}
+
+
+uint8_t TC58CVG1_QSPI_HoldEnable(QSPI_HandleTypeDef *hqspi)
+{
+	uint8_t Status = 0;
+
+	/* Disable Hold function */
+	if (TC58CVG1_QSPI_GetFeature(hqspi, TC58CVG1_FT_B0_ADR, &Status) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	Status &= ~TC58CVG1_FT_B0_HOLD_D_BIT;
+
+
+	if (TC58CVG1_QSPI_SetFeature(hqspi, TC58CVG1_FT_B0_ADR, Status) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	return QSPI_OK;
+}
+
+
+
+uint8_t TC58CVG1_QSPI_ProgramLoadRandom(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size)
+{
+	QSPI_CommandTypeDef sCommand;
+
+
+	/* Initialize the program command */
+	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+	sCommand.Instruction       = TC58CVG1_PROGRAM_LOAD_RANDOMx4_CMD;
+	sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
+	sCommand.AddressSize       = QSPI_ADDRESS_16_BITS;
+	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+	sCommand.DataMode          = QSPI_DATA_4_LINES;
+	sCommand.DummyCycles       = 0;
+	sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
+	sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+
+	sCommand.Address = ColAddr;
+	sCommand.NbData  = Size;
+
+
+	/* Configure the command */
+	if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
+
+	/* Transmission of the data */
+	if (HAL_QSPI_Transmit(hqspi, pData, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	{
+		return QSPI_ERROR;
+	}
 
 
 	return QSPI_OK;

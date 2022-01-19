@@ -107,12 +107,16 @@ uint8_t TC58CVG1_QSPI_SetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uin
 uint8_t TC58CVG1_QSPI_ReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr);
 uint8_t TC58CVG1_QSPI_CheckReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr);
 uint8_t TC58CVG1_QSPI_ReadFromBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size);
-uint8_t TC58CVG1_QSPI_WriteToBuf(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size);
+uint8_t TC58CVG1_QSPI_ProgramLoad(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size);
+uint8_t TC58CVG1_QSPI_ProgramLoadRandom(QSPI_HandleTypeDef *hqspi, uint8_t* pData, uint32_t ColAddr, uint32_t Size);
 uint8_t TC58CVG1_QSPI_ProgramExecute(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr);
 uint8_t TC58CVG1_QSPI_EraseBlock(QSPI_HandleTypeDef *hqspi, uint32_t BlockAddress);
 uint8_t TC58CVG1_QSPI_UnlockAllBlocks(QSPI_HandleTypeDef *hqspi);
 uint8_t TC58CVG1_QSPI_ResetMemory(QSPI_HandleTypeDef *hqspi);
 void TC58CVG1_QSPI_EraseChip(QSPI_HandleTypeDef *hqspi);
+uint8_t TC58CVG1_QSPI_HoldDisable(QSPI_HandleTypeDef *hqspi);
+uint8_t TC58CVG1_QSPI_HoldEnable(QSPI_HandleTypeDef *hqspi);
+uint8_t TC58CVG1_QSPI_ClearBuffer(QSPI_HandleTypeDef *hqspi);
 
 
 /**

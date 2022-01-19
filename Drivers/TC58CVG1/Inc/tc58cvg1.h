@@ -96,6 +96,7 @@
 #define TC58CVG1_ERASE_BLOCK_CMD             0xD8
 
 #define TC58CVG1_PROGRAM_LOADx4_CMD          0x32
+#define TC58CVG1_PROGRAM_LOAD_RANDOMx4_CMD   0xC4
 #define TC58CVG1_READ_BUFFERx4_CMD           0x6B
 
 /* Write Operations */
@@ -111,6 +112,7 @@
 
 
 #define TC58CVG1_FT_B0_ADR                   0xB0
+#define TC58CVG1_FT_B0_HOLD_D_BIT            (1 << 0)
 
 
 #define TC58CVG1_FT_C0_ADR                   0xC0

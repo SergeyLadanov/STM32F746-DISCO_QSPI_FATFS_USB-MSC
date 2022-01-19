@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstring>
 
+
 int NandExample::SectorIsBad(dhara_block_t bno)
 {
 	if (bno >= GetNumBlocks())
@@ -18,7 +19,7 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 	}
 
 	uint8_t Probe = 0xFF;
-	uint32_t row = bno << log2_ppb;
+	uint32_t row = bno << (POSITION_VAL(TC58CVG1_PAGE_SIZE));
 
 	if (TC58CVG1_QSPI_CheckReadPage(QSPI_Ref, row))
 	{
@@ -27,18 +28,18 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 
 	if (TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, &Probe, 2049, 1))
 	{
-		//printf("Sector is bad!\r\n");
+		printf("Sector is bad!\r\n");
 		return true;
 	}
 
 
 	if (!Probe)
 	{
-		//printf("Sector is bad!\r\n");
+		printf("Sector is bad!\r\n");
 		return true;
 	}
 
-	//printf("Sector is good!\r\n");
+	printf("Sector is good!\r\n");
 
 	return false;
 }
@@ -56,19 +57,21 @@ void NandExample::MarkBadSector(dhara_block_t bno)
 int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 {
 
-	uint32_t row = bno << (log2_ppb);
+	uint32_t row = bno << (POSITION_VAL(TC58CVG1_PAGE_SIZE));
 	if (bno >= GetNumBlocks())
 	{
 		return -1;
 	}
-	//printf("Erasing page: %d!\r\n", (int) (row));
+	printf("Erasing page: %d!\r\n", (int) (row));
 	return TC58CVG1_QSPI_EraseBlock(QSPI_Ref, row);
 }
 
 
 int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 {
-	uint32_t bno = p >> log2_ppb;
+	uint32_t bno = p >> (log2_ppb);
+	uint32_t Row = p >> POSITION_VAL(TC58CVG1_PAGE_SIZE / TC58CVG1_SECTOR_SIZE);
+	uint32_t offset_on_page = (p << log2_page_size) - (Row << POSITION_VAL(TC58CVG1_PAGE_SIZE));
 
 	if ((bno < 0) || (bno >= GetNumBlocks())) 
 	{
@@ -76,21 +79,30 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 	}
 
 
-	if (TC58CVG1_QSPI_WriteToBuf(QSPI_Ref, (uint8_t *) data, 0, GetPageSize()))
+	if (TC58CVG1_QSPI_ClearBuffer(QSPI_Ref))
 	{
 		return -1;
 	}
 
-	//printf("Write adr: %d\r\n", (int) p);
+
+	if (TC58CVG1_QSPI_ProgramLoadRandom(QSPI_Ref, (uint8_t *) data, offset_on_page, GetPageSize()))
+	{
+		return -1;
+	}
+
+	printf("Write row: %lu\r\n", Row);
+	printf("Write page: %lu\r\n", p);
+	printf("Write adr on page: %lu\r\n", offset_on_page );
 
 
-	return TC58CVG1_QSPI_ProgramExecute(QSPI_Ref, p);
+	return TC58CVG1_QSPI_ProgramExecute(QSPI_Ref, Row);
 }
 
 
 int NandExample::BlockIsFree(dhara_page_t p)
 {
 	uint32_t bno = p >> log2_ppb;
+	uint32_t Row = p >> POSITION_VAL(TC58CVG1_PAGE_SIZE / TC58CVG1_SECTOR_SIZE);
 
 
 	if ((bno < 0) || (bno >= GetNumBlocks()))
@@ -107,7 +119,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 
 	for (uint8_t i = 3; i > 0; i--)
 	{
-		if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, p))
+		if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, Row))
 		{
 			//printf("Sector is bad!\r\n");
 			if (!i)
@@ -158,6 +170,8 @@ int NandExample::BlockIsFree(dhara_page_t p)
 int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *data, dhara_error_t *err)
 {
 	uint32_t bno = p >> log2_ppb;
+	uint32_t Row = p >> POSITION_VAL(TC58CVG1_PAGE_SIZE / TC58CVG1_SECTOR_SIZE);
+	uint32_t offset_on_page = (p << log2_page_size) - (Row << POSITION_VAL(TC58CVG1_PAGE_SIZE));
 	//uint32_t addr = (p << log2_page_size);
 
 	if ((bno < 0) || (bno >= GetNumBlocks()))
@@ -172,17 +186,20 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 
 
 
-	if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, p))
+	if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, Row))
 	{
-		//printf("Sector is bad!\r\n");
+		printf("Error of reading page!\r\n");
 		return -1;
 	}
 
+	printf("Read row: %lu\r\n", Row);
+	printf("Read page: %lu\r\n", p);
+	//printf("Read adr on page with offset: %lu\r\n", offset_on_page + offset);
+	printf("Read offset: %lu\r\n", (uint32_t) offset);
+	printf("Read adr on page: %lu\r\n", offset_on_page);
 
-	//printf("Read adr: %d\r\n", (int) (p));
 
-
-	return TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, data, offset, length);;
+	return TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, data, offset_on_page + offset, length);
 }
 
 
