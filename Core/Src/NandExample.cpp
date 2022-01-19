@@ -19,9 +19,11 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 	}
 
 	uint8_t Probe = 0xFF;
-	uint32_t row = bno << (POSITION_VAL(TC58CVG1_BLOCK_SIZE / TC58CVG1_PAGE_SIZE));
 
-	if (TC58CVG1_QSPI_CheckReadPage(QSPI_Ref, row))
+	uint32_t Row = bno << (log2_page_size + log2_ppb - POSITION_VAL(TC58CVG1_PAGE_SIZE));
+
+
+	if (TC58CVG1_QSPI_CheckReadPage(QSPI_Ref, Row))
 	{
 		return true;
 	}
@@ -57,20 +59,21 @@ void NandExample::MarkBadSector(dhara_block_t bno)
 int NandExample::EraseBlock(dhara_block_t bno, dhara_error_t *err)
 {
 
-	uint32_t row = bno << (POSITION_VAL(TC58CVG1_BLOCK_SIZE / TC58CVG1_PAGE_SIZE));
+	uint32_t Row = bno << (log2_page_size + log2_ppb - POSITION_VAL(TC58CVG1_PAGE_SIZE));
+
 	if (bno >= GetNumBlocks())
 	{
 		return -1;
 	}
-	//printf("Erasing page: %d!\r\n", (int) (row));
-	return TC58CVG1_QSPI_EraseBlock(QSPI_Ref, row);
+	//printf("Erasing page: %d!\r\n", (int) (Row));
+	return TC58CVG1_QSPI_EraseBlock(QSPI_Ref, Row);
 }
 
 
 int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 {
 	uint32_t bno = p >> (log2_ppb);
-	uint32_t Row = p >> POSITION_VAL(TC58CVG1_PAGE_SIZE / TC58CVG1_SECTOR_SIZE);
+	uint32_t Row = p >> (POSITION_VAL(TC58CVG1_PAGE_SIZE) - log2_page_size);
 	uint32_t offset_on_page = (p << log2_page_size) - (Row << POSITION_VAL(TC58CVG1_PAGE_SIZE));
 
 	if ((bno < 0) || (bno >= GetNumBlocks())) 
@@ -102,7 +105,7 @@ int NandExample::Prog(dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 int NandExample::BlockIsFree(dhara_page_t p)
 {
 	uint32_t bno = p >> log2_ppb;
-	uint32_t Row = p >> POSITION_VAL(TC58CVG1_PAGE_SIZE / TC58CVG1_SECTOR_SIZE);
+	uint32_t Row = p >> (POSITION_VAL(TC58CVG1_PAGE_SIZE) - log2_page_size);
 
 
 	if ((bno < 0) || (bno >= GetNumBlocks()))
@@ -170,7 +173,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *data, dhara_error_t *err)
 {
 	uint32_t bno = p >> log2_ppb;
-	uint32_t Row = p >> POSITION_VAL(TC58CVG1_PAGE_SIZE / TC58CVG1_SECTOR_SIZE);
+	uint32_t Row = p >> (POSITION_VAL(TC58CVG1_PAGE_SIZE) - log2_page_size);
 	uint32_t offset_on_page = (p << log2_page_size) - (Row << POSITION_VAL(TC58CVG1_PAGE_SIZE));
 	//uint32_t addr = (p << log2_page_size);
 
