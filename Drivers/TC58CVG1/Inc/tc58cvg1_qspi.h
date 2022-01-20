@@ -37,8 +37,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F746G_DISCOVERY_QSPI_H
-#define __STM32F746G_DISCOVERY_QSPI_H
+#ifndef __TC58CVG1_QSPI_H
+#define __TC58CVG1_QSPI_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -86,7 +86,7 @@ typedef struct {
   uint32_t EraseSectorsNumber; /*!< Number of sectors for the erase operation */
   uint32_t ProgPageSize;       /*!< Size of pages for the program operation */
   uint32_t ProgPagesNumber;    /*!< Number of pages for the program operation */
-} QSPI_Info;
+} TC58CVG1_QSPI_Info;
 
 /**
   * @}
@@ -100,7 +100,7 @@ typedef struct {
   */
 uint8_t TC58CVG1_QSPI_Init        (QSPI_HandleTypeDef *hqspi);
 uint8_t TC58CVG1_QSPI_DeInit      (QSPI_HandleTypeDef *hqspi);
-uint8_t TC58CVG1_QSPI_GetInfo     (QSPI_Info* pInfo);
+uint8_t TC58CVG1_QSPI_GetInfo     (TC58CVG1_QSPI_Info *pInfo);
 
 uint8_t TC58CVG1_QSPI_GetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uint8_t *pData);
 uint8_t TC58CVG1_QSPI_SetFeature(QSPI_HandleTypeDef *hqspi, uint8_t address, uint8_t Data);

@@ -113,7 +113,7 @@ static uint8_t QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_t Time
   * @param  pInfo: pointer on the configuration structure  
   * @retval QSPI memory status
   */
-uint8_t TC58CVG1_QSPI_GetInfo(QSPI_Info* pInfo)
+uint8_t TC58CVG1_QSPI_GetInfo(TC58CVG1_QSPI_Info* pInfo)
 {
   /* Configure the structure with the memory configuration */
   pInfo->FlashSize          = TC58CVG1_FLASH_SIZE;
