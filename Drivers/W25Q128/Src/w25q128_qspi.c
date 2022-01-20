@@ -452,7 +452,7 @@ uint8_t W25Q128_QSPI_GetStatus(QSPI_HandleTypeDef *hqspi)
   * @param  pInfo: pointer on the configuration structure  
   * @retval QSPI memory status
   */
-uint8_t W25Q128_QSPI_GetInfo(QSPI_Info* pInfo)
+uint8_t W25Q128_QSPI_GetInfo(W25Q128_QSPI_Info* pInfo)
 {
   /* Configure the structure with the memory configuration */
   pInfo->FlashSize          = W25Q128A_FLASH_SIZE;

@@ -77,7 +77,7 @@ typedef struct {
   uint32_t EraseSectorsNumber; /*!< Number of sectors for the erase operation */
   uint32_t ProgPageSize;       /*!< Size of pages for the program operation */
   uint32_t ProgPagesNumber;    /*!< Number of pages for the program operation */
-} QSPI_Info;
+} W25Q128_QSPI_Info;
 
 /**
   * @}
@@ -95,7 +95,7 @@ uint8_t W25Q128_QSPI_Erase_Block (QSPI_HandleTypeDef *hqspi, uint32_t BlockAddre
 uint8_t W25Q128_QSPI_Erase_Sector(QSPI_HandleTypeDef *hqspi, uint32_t Sector);
 uint8_t W25Q128_QSPI_Erase_Chip  (QSPI_HandleTypeDef *hqspi);
 uint8_t W25Q128_QSPI_GetStatus   (QSPI_HandleTypeDef *hqspi);
-uint8_t W25Q128_QSPI_GetInfo     (QSPI_Info* pInfo);
+uint8_t W25Q128_QSPI_GetInfo     (W25Q128_QSPI_Info* pInfo);
 uint8_t W25Q128_QSPI_EnableMemoryMappedMode(QSPI_HandleTypeDef *hqspi);
 uint8_t W25Q128_QSPI_SuspendErase(QSPI_HandleTypeDef *hqspi);
 uint8_t W25Q128_QSPI_ResumeErase (QSPI_HandleTypeDef *hqspi);
