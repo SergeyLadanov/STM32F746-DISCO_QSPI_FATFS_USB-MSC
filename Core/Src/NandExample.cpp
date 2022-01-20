@@ -120,7 +120,7 @@ int NandExample::BlockIsFree(dhara_page_t p)
 	int result = true;
 
 
-	for (uint8_t i = 3; i > 0; i--)
+	for (uint8_t i = 4; i > 0; i--)
 	{
 		if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, Row))
 		{
@@ -188,11 +188,20 @@ int NandExample::Read(dhara_page_t p, size_t offset, size_t length, uint8_t *dat
 	}
 
 
-
-	if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, Row))
+	for (uint8_t i = 4; i > 0; i--)
 	{
-		//printf("Error of reading page!\r\n");
-		return -1;
+		if (TC58CVG1_QSPI_ReadPage(QSPI_Ref, Row))
+		{
+			if (!i)
+			{
+				//printf("Error of reading page!\r\n");
+				return -1;
+			}
+		}
+		else
+		{
+			break;
+		}
 	}
 
 //	printf("Read row: %lu\r\n", Row);

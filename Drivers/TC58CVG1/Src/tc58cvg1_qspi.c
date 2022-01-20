@@ -399,7 +399,7 @@ uint8_t TC58CVG1_QSPI_ReadPage(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr)
   /* Configure the command */
   if (HAL_QSPI_Command(hqspi, &sCommand, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
   {
-    return QSPI_ERROR;
+	  return QSPI_ERROR;
   }
 
 
@@ -531,7 +531,7 @@ uint8_t TC58CVG1_QSPI_ProgramExecute(QSPI_HandleTypeDef *hqspi, uint32_t RowAddr
 	}
 
 	/* Configure automatic polling mode to wait for end of program */
-	if (QSPI_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
+	if (QSPI_AutoPollingMemReady(hqspi, TC58CVG1_PROG_MAX_TIME) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}
@@ -584,7 +584,7 @@ uint8_t TC58CVG1_QSPI_EraseBlock(QSPI_HandleTypeDef *hqspi, uint32_t BlockAddres
 	}
 
 	/* Configure automatic polling mode to wait for end of program */
-	if (QSPI_AutoPollingMemReady(hqspi, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != QSPI_OK)
+	if (QSPI_AutoPollingMemReady(hqspi, TC58CVG1_BLOCK_ERASE_MAX_TIME) != QSPI_OK)
 	{
 		return QSPI_ERROR;
 	}

@@ -79,8 +79,9 @@
 
 #define TC58CVG1_DUMMY_CYCLES_READ           8
 
-#define TC58CVG1_BLOCK_ERASE_MAX_TIME        10
-#define TC58CVG1_READ_PAGE_MAX_TIME          35
+#define TC58CVG1_BLOCK_ERASE_MAX_TIME        500
+#define TC58CVG1_READ_PAGE_MAX_TIME          500
+#define TC58CVG1_PROG_MAX_TIME               500
 
 /** 
   * @brief  N25Q128A Commands  
