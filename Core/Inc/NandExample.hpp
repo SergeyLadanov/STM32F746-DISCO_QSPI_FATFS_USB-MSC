@@ -15,6 +15,7 @@ class NandExample : public DharaNandDriver
 {
 private:
 	QSPI_HandleTypeDef *QSPI_Ref = nullptr;
+	static constexpr uint32_t BAD_MARKER_OFFSET = 2049;
 public:
 
     NandExample(uint8_t Log2PageSize, uint8_t Log2Ppb, unsigned int NumBlocks, QSPI_HandleTypeDef *hqspi)

@@ -28,7 +28,7 @@ int NandExample::SectorIsBad(dhara_block_t bno)
 		return true;
 	}
 
-	if (TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, &Probe, 2049, 1))
+	if (TC58CVG1_QSPI_ReadFromBuf(QSPI_Ref, &Probe, BAD_MARKER_OFFSET, sizeof(Probe)))
 	{
 		//printf("Sector is bad!\r\n");
 		return true;
@@ -53,6 +53,13 @@ void NandExample::MarkBadSector(dhara_block_t bno)
 	{
 		return;
 	}
+
+	uint32_t Row = bno << (log2_page_size + log2_ppb - POSITION_VAL(TC58CVG1_PAGE_SIZE));
+	uint8_t Marker = 0x00;
+
+	TC58CVG1_QSPI_ClearBuffer(QSPI_Ref);
+	TC58CVG1_QSPI_ProgramLoadRandom(QSPI_Ref, &Marker, BAD_MARKER_OFFSET, sizeof(Marker));
+	TC58CVG1_QSPI_ProgramExecute(QSPI_Ref, Row);
 }
 
 
